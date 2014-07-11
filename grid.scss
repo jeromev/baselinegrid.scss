@@ -1,0 +1,68 @@
+//===============================================
+// VARS
+//===============================================
+$base-font-size: 16px !default;
+$base-cap-height: 0.53 !default; // adjust to font
+$base-line-height: 1.618 !default; // golden ratio
+$base-scale: 2 !default;
+
+$base-unit: $base-line-height / $base-scale * $base-font-size; // (px)
+
+//===============================================
+// MIXINS
+//===============================================
+
+//···············································
+// Grid
+//···············································
+@function grid-units-h($q: 1) {
+  @return $q * $base-unit * 1.1667; // px
+}
+@function grid-units-v($q: 1) {
+  @return $q * $base-unit; // px
+}
+//···············································
+// Baseline
+//···············································
+@mixin show-baseline($color: rgba(0, 0, 0, 0.1667)) {
+  background-image: linear-gradient(
+    to bottom, 
+    $color 0%, 
+    transparent 20%
+  );
+  background-size: 100% $base-unit;
+  background-position: left top;
+}
+
+// based on a gist by Razvan Onofrei: https://gist.github.com/razwan/10662500
+// See https://medium.com/@razvanonofrei/aligning-type-to-baseline-the-right-way-using-sass-e258fce47a9b 
+// see also https://gist.github.com/jeromev/11301969
+@mixin align-to-baseline($font-size: $base-font-size, $offset-top: 0, $offset-bottom: 0, $method: 2, $scale: $base-scale) {
+  // integer number of base units that can fit the given font-size
+  $lines: ceil($font-size / $base-unit);
+	// calculate the new line-height
+	$line-height: $base-unit * $lines / $font-size;  // (em)
+  @if ($font-size != $base-font-size) {
+    // print the results
+	  font-size: ($font-size / $base-font-size) + em;
+	  line-height: $line-height + em;
+  }
+	$baseline-distance: ($line-height - $base-cap-height) / $scale;  // (em)
+	$offset-top: $offset-top * $base-unit / $font-size;  // (em)
+	$offset-bottom: $offset-bottom * $base-unit / $font-size;  // (em)
+	
+	// METHOD 1
+	// this method can relatively move down elements you may not want to
+	@if ($method == 1) {
+	  position: relative;
+	  top: $baseline-distance + $offset-top + em;
+	  padding-bottom: $offset-bottom + em;
+	}
+	// METHOD 2
+	// use this mixin only on elements that have one direction margins
+	// http://csswizardry.com/2012/06/single-direction-margin-declarations
+	@if ($method == 2) {
+    padding-top: $baseline-distance + $offset-top + em;
+    margin-bottom: $line-height - $baseline-distance - $base-unit / $font-size + $offset-bottom + em;
+  }
+}

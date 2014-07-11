@@ -1,0 +1,19 @@
+{
+  "name": "grid.scss",
+  "version": "0.0.1",
+  "homepage": "https://github.com/jeromev/grid.scss",
+  "authors": [
+    "Jerome Vogel <jv@jeromevogel.com>"
+  ],
+  "description": "A simple grid framework",
+  "main": "grid.scss",
+  "license": "MIT",
+  "private": false,
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ]
+}
