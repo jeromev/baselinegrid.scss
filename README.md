@@ -5,6 +5,12 @@ A very simple grid framework for sass. (_Work in progress_)
 
 ## Setup
 
+Import the grid framework:
+
+<code>
+@import "grid";
+</code>
+
 Set the main font size, in _pixels_:
 
 <code>
@@ -21,12 +27,6 @@ Set the right cap height, depending on your font:
 
 <code>
 $base-cap-height: _0.53_;
-</code>
-
-Import the grid framework:
-
-<code>
-@import "grid";
 </code>
 
 ## Usage
