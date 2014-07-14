@@ -11,21 +11,26 @@ $base-scale: 2 !default;
 $base-unit: $base-line-height / $base-scale * $base-font-size; // (px)
 
 //===============================================
+// FUNCTIONS
+//===============================================
+
+@function em($px: 0, $font-size: $base-font-size) {
+  @return $px / $font-size + em;
+}
+@function rem($px: 0) {
+  @return $px / $base-font-size + rem;
+}
+@function grid-units-h($q: 1, $font-size: $base-font-size) {
+  @return em($q * $base-unit * 1.1667, $font-size);
+}
+@function grid-units-v($q: 1, $font-size: $base-font-size) {
+  @return em($q * $base-unit, $font-size);
+}
+
+//===============================================
 // MIXINS
 //===============================================
 
-//···············································
-// Grid
-//···············································
-@function grid-units-h($q: 1) {
-  @return $q * $base-unit * 1.1667; // px
-}
-@function grid-units-v($q: 1) {
-  @return $q * $base-unit; // px
-}
-//···············································
-// Baseline
-//···············································
 @mixin show-baseline($color: rgba(0, 0, 0, 0.1667)) {
   background-image: linear-gradient(
     to bottom, 
