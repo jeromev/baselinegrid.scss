@@ -1,11 +1,11 @@
 {
   "name": "grid.scss",
-  "version": "0.1.3",
+  "version": "0.1.4",
   "homepage": "https://github.com/jeromev/grid.scss",
   "authors": [
     "Jerome Vogel <jv@jeromevogel.com>"
   ],
-  "description": "A simple grid framework",
+  "description": "A very simple grid framework for sass",
   "main": "grid.scss",
   "license": "MIT",
   "private": false,

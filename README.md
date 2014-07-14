@@ -40,6 +40,7 @@ body {
   font-size: $base-font-size;
   line-height: $base-line-height + em;
   font-family: "Fira Sans", Verdana, sans-serif;
+  @include show-baseline();
 }
 h1 {
   @include align-to-baseline(80px);
