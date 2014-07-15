@@ -3,12 +3,12 @@
 //===============================================
 // VARS
 //===============================================
-$base-font-size: 16px !default;
-$base-cap-height: 0.53 !default; // this value has to be adjusted to the font used
-$base-line-height: 1.618 !default; // golden ratio
+$base-font-size: 16px !global;
+$base-cap-height: 0.53 !global; // this value has to be adjusted to the font used
+$base-line-height: 1.618 !global; // golden ratio
 $base-scale: 2 !default;
 
-$base-unit: $base-line-height / $base-scale * $base-font-size !default; // (px)
+$base-unit: $base-line-height / $base-scale * $base-font-size !global; // (px)
 
 //===============================================
 // FUNCTIONS
