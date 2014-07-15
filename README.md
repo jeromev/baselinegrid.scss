@@ -10,19 +10,7 @@ See also https://medium.com/@razvanonofrei/aligning-type-to-baseline-the-right-w
 Import the grid framework:
 
 <code>
-@import "grid";
-</code>
-
-Set the main font size, in _pixels_:
-
-<code>
-$base-font-size: _16px_;
-</code>
-
-Set the main line height:
-
-<code>
-$base-line-height: _1.618_;
+@import "grid.scss/grid.scss";
 </code>
 
 Set the right cap height, depending on your font:
@@ -37,9 +25,8 @@ Example:
 
 <pre><code>
 body {
-  font-size: $base-font-size;
-  line-height: $base-line-height + em;
   font-family: "Fira Sans", Verdana, sans-serif;
+  @include set-base-font-size(16px, 1.618);
   @include show-baseline();
 }
 h1 {
