@@ -6,7 +6,7 @@
 $base-font-size: 16px !global;
 $base-cap-height: 0.53 !global; // this value has to be adjusted to the font used
 $base-line-height: 1.618 !global; // golden ratio
-$base-scale: 2 !default;
+$base-scale: 2 !global;
 
 $base-unit: $base-line-height / $base-scale * $base-font-size !global; // (px)
 
