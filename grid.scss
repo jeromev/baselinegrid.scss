@@ -33,9 +33,9 @@ $base-unit: $base-line-height / $base-scale * $base-font-size !global; // (px)
 
 // set-base-font-size()
 @mixin set-base-font-size($font-size: 16px, $line-height: 1.618) {
-  $base-font-size: $font-size;
-  $base-line-height: $line-height;
-  $base-unit: $base-line-height / $base-scale * $base-font-size;
+  $base-font-size: $font-size !global;
+  $base-line-height: $line-height !global;
+  $base-unit: $base-line-height / $base-scale * $base-font-size !global;
   font-size: $base-font-size;
   line-height: $base-line-height + em;
 }
