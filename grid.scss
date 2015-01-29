@@ -4,6 +4,7 @@
 // VARS
 //===============================================
 $base-font-size: 16px !global;
+$local-font-size: $base-font-size !global;
 $base-cap-height: 0.53 !global; // this value has to be adjusted to the font used
 $base-line-height: 1.618 !global; // golden ratio
 $base-scale: 2 !global;
@@ -34,6 +35,7 @@ $base-unit: $base-line-height / $base-scale * $base-font-size !global; // (px)
 // set-base-font-size()
 @mixin set-base-font-size($font-size: 16px, $line-height: 1.618) {
   $base-font-size: $font-size !global;
+  $local-font-size: $font-size !global;
   $base-line-height: $line-height !global;
   $base-unit: $base-line-height / $base-scale * $base-font-size !global;
   font-size: $base-font-size;
@@ -57,6 +59,7 @@ $base-unit: $base-line-height / $base-scale * $base-font-size !global; // (px)
 // See https://medium.com/@razvanonofrei/aligning-type-to-baseline-the-right-way-using-sass-e258fce47a9b 
 // see also https://gist.github.com/jeromev/11301969
 @mixin align-to-baseline($font-size: $base-font-size, $offset-top: 0, $offset-bottom: 0, $method: 2, $scale: $base-scale) {
+  $local-font-size: $font-size !global;
   // integer number of base units that can fit the given font-size
   $lines: ceil($font-size / $base-unit);
 	// calculate the new line-height
