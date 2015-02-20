@@ -21,11 +21,17 @@ $base-unit: $base-line-height / $base-scale * $base-font-size !global; // (px)
 @function rem($px: 0) {
   @return $px / $base-font-size + rem;
 }
-@function grid-units-h($q: 1, $font-size: $base-font-size) {
-  @return em($q * $base-unit * 1.1667, $font-size);
+@function grid-units-h($q: 1, $font-size: $local-font-size) {
+  @return em($q * $base-unit * 1.1618, $font-size);
 }
-@function grid-units-v($q: 1, $font-size: $base-font-size) {
+@function guh($q: 1, $font-size: $local-font-size) {
+  @return grid-units-h($q, $font-size);
+}
+@function grid-units-v($q: 1, $font-size: $local-font-size) {
   @return em($q * $base-unit, $font-size);
+}
+@function guv($q: 1, $font-size: $local-font-size) {
+  @return grid-units-v($q, $font-size);
 }
 
 //===============================================
