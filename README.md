@@ -16,7 +16,6 @@ Import the grid framework:
 Set the right cap height, depending on your font:
 
 <code>
-$font-family: "Fira Sans", Verdana, sans-serif;
 $base-cap-height: 0.53;
 </code>
 
