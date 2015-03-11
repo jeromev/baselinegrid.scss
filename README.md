@@ -1,7 +1,7 @@
 grid.scss
 =========
 
-A very simple grid framework for sass. (_Work in progress_)
+A very tiny simple grid framework for sass. (_Work in progress_)
 The included baseline mixin is based on a fabulous gist by Razvan Onofrei: https://gist.github.com/razwan/10662500 
 See also https://medium.com/@razvanonofrei/aligning-type-to-baseline-the-right-way-using-sass-e258fce47a9b 
 
@@ -16,7 +16,8 @@ Import the grid framework:
 Set the right cap height, depending on your font:
 
 <code>
-$base-cap-height: _0.53_;
+$font-family: "Fira Sans", Verdana, sans-serif;
+$base-cap-height: 0.53;
 </code>
 
 ## Usage
@@ -24,13 +25,11 @@ $base-cap-height: _0.53_;
 Example:
 
 <pre><code>
-body {
-  font-family: "Fira Sans", Verdana, sans-serif;
-  @include set-base-font-size(16px, 1.618);
-  @include show-baseline();
+html {
+  @include set-base-font-size(18px);
 }
 h1 {
-  @include align-to-baseline(80px);
+  @include align-to-baseline(40px);
 }
 p {
   @include align-to-baseline();
