@@ -5,7 +5,8 @@
 //===============================================
 $base-font-size: 16px !global; // (px)
 $base-cap-height: 0.53 !global; // this value has to be adjusted to the font used
-$base-line-height: 1.618 !global; // golden ratio
+$optical-adjustment-width: 1.1618; // any width needs to be adjusted to look equal to some height
+$base-line-height: 1.618 !global; // ex.: golden ratio
 $base-scale: 2 !global;
 
 $base-unit: $base-line-height / $base-scale * $base-font-size !global; // (px)
@@ -21,7 +22,7 @@ $base-unit: $base-line-height / $base-scale * $base-font-size !global; // (px)
   @return $px / $base-font-size + rem;
 }
 @function grid-units-h($q: 1) {
-  @return rem($q * $base-unit * 1.1618);
+  @return rem($q * $base-unit * $optical-adjustment-width);
 }
 @function guh($q: 1) {
   @return grid-units-h($q);
@@ -38,7 +39,7 @@ $base-unit: $base-line-height / $base-scale * $base-font-size !global; // (px)
 //===============================================
 
 @mixin debug($v: 0) {
-  :before {
+  &:before {
     content: unquote("'" + $v + "'");
     background: white;
     color: red;
@@ -47,8 +48,24 @@ $base-unit: $base-line-height / $base-scale * $base-font-size !global; // (px)
   }
 }
 
+@mixin padh($guh: 1) {
+  padding-right: guh($guh / $optical-adjustment-width);
+  padding-left: guh($guh);
+}
+@mixin margh($guh: 1) {
+  margin-right: guh($guh / $optical-adjustment-width);
+  margin-left: guh($guh);
+}
+@mixin padv($guv: 1) {
+  padding-top: guv($guv);
+  padding-bottom: guv($guv);
+}
+@mixin margv($guv: 1) {
+  margin-top: guv($guv);
+  margin-bottom: guv($guv);
+}
 // set-base-font-size()
-@mixin set-base-font-size($font-size: 16px, $line-height: 1.618) {
+@mixin set-base-font-size($font-size: $base-font-size, $line-height: $base-line-height) {
   $base-font-size: $font-size !global;
   $local-font-size: $font-size !global;
   $base-line-height: $line-height !global;
