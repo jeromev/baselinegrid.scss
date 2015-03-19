@@ -120,4 +120,9 @@ $base-unit: $base-line-height / $base-scale * $base-font-size !global; // (px)
     padding-top: rem($baseline-distance + $offset-top);
     margin-bottom: rem($line-height - $baseline-distance - $base-unit + $offset-bottom);
   }
+	// METHOD 3: padding-only
+	@if ($method == 3) {
+    padding-top: rem($baseline-distance + $offset-top);
+    padding-bottom: rem($line-height - $baseline-distance - $base-unit + $offset-bottom);
+  }
 }
