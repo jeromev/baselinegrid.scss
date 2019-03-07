@@ -1,0 +1,17 @@
+{
+  "name": "grid.scss",
+  "description": "A very simple grid framework for sass",
+  "version": "0.2.3",
+  "author": {
+      "name": "Jérôme Vogel",
+      "email": "jv@jeromevogel.com"
+  },
+  "main": "grid.scss"
+  "repository": {
+      "type": "git",
+      "url": "https://github.com/jeromev/grid.scss.git"
+  },
+  "licenses": "MIT",
+  "homepage": "https://github.com/jeromev/grid.scss"
+}
+
