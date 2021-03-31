@@ -30,6 +30,11 @@ Initialize:
 Example:
 
 <pre><code>
+@use 'baselinegrid' as bg with (
+  $debug: 1
+);
+
+@include bg.begin();
 html {
   font-family: Verdana, sans-serif;
   @include bg.root();
