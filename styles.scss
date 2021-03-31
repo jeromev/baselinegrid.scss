@@ -1,0 +1,76 @@
+@use 'baselinegrid' as bg with (
+  $debug: 1
+);
+
+@import url(node_modules/sanitize.css/sanitize.css);
+
+@include bg.begin();
+
+html {
+  font-family: Georgia, serif;
+  @include bg.root();
+}
+
+article {
+  @include bg.pad(2);
+  > section {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(bg.h(18), 1fr));
+    column-gap: bg.h();
+    padding: bg.v() 0;
+  }
+}
+
+h1, h2 {
+  font-family: Verdana, sans-serif;
+}
+
+h1, h2, p {
+  max-width: bg.h(36);
+  margin: 0;
+}
+
+h1 {
+  @include bg.scale((
+    's': 60px,
+    'm': 66px,
+    'l': 72px,
+    'xl': 84px
+  ));
+}
+
+h2 {
+  @include bg.scale((
+    's': 40px,
+    'm': 44px,
+    'l': 48px,
+    'xl': 54px
+  ));
+}
+p {
+  @include bg.set();
+}
+
+section p {
+  &:nth-of-type(1) {
+    @include bg.set();
+  }
+  &:nth-of-type(2) {
+    @include bg.set(21px);
+  }
+  &:nth-of-type(3) {
+    @include bg.set(12px);
+  }
+  &:nth-of-type(4) {
+    @include bg.set(9px);
+  }
+}
+
+#gridblock {
+  position: fixed;
+  top: 0;
+  left: bg.h();
+  width: bg.h();
+  height: bg.v();
+  background-color: red;
+}

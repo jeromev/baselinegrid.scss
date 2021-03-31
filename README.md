@@ -1,28 +1,28 @@
-grid.scss
+baselinegrid.scss
 =========
 
-A very tiny simple set of tools, in SCSS, to align text to a baseline grid. (_Work in progress_)
-Based on a gist by Razvan Onofrei: https://gist.github.com/razwan/10662500 
-See also https://medium.com/@razvanonofrei/aligning-type-to-baseline-the-right-way-using-sass-e258fce47a9b 
+A small set of tools, in SCSS, to align text to a baseline grid. Current calculations are based on Benoît Wimart's Basel project version 0.1 beta (6 May 2013 http://b4d455.fr/basel).
 
 ## Install
 
 <code>
-$ bower install grid.scss
+$ npm install baselinegrid.scss
 </code>
 
 ## Setup
 
-Import the grid framework:
+Import _baselinegrid.scss:
 
 <code>
-@import "grid.scss/grid.scss";
+@use 'baselinegrid' as bg with (
+  $debug: 1
+);
 </code>
 
-Set the right cap height, depending on your font:
+Initialize:
 
 <code>
-$base-cap-height: 0.53;
+@include bg.begin();
 </code>
 
 ## Usage
@@ -31,13 +31,27 @@ Example:
 
 <pre><code>
 html {
-  @include set-base-font-size(18px);
+  font-family: Verdana, sans-serif;
+  @include bg.root();
 }
 h1 {
-  @include align-to-baseline(40px);
+  @include bg.scale((
+    's': 60px,
+    'm': 66px,
+    'l': 72px,
+    'xl': 84px
+  ));
+}
+h2 {
+  @include bg.scale((
+    's': 40px,
+    'm': 44px,
+    'l': 48px,
+    'xl': 54px
+  ));
 }
 p {
-  @include align-to-baseline();
+  @include bg.set();
 }
 </code></pre> 
 

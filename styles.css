@@ -1,0 +1,233 @@
+@import url(node_modules/sanitize.css/sanitize.css);
+/* baselinegrid.scss | MIT License | https://github.com/jeromev/baselinegrid.scss */
+body *:before,
+body *:after {
+  display: inline-block;
+  vertical-align: baseline;
+}
+
+.bg-content-none, .bg-surrounds-base:before, section p:nth-of-type(1):before, p:before, .bg-surrounds-base:after, section p:nth-of-type(1):after, p:after, .bg-surrounds:before, section p:nth-of-type(4):before, section p:nth-of-type(3):before, section p:nth-of-type(2):before, h2:before, h1:before, .bg-surrounds:after, section p:nth-of-type(4):after, section p:nth-of-type(3):after, section p:nth-of-type(2):after, h2:after, h1:after {
+  content: "";
+}
+
+.bg-surrounds:before, section p:nth-of-type(4):before, section p:nth-of-type(3):before, section p:nth-of-type(2):before, h2:before, h1:before, .bg-surrounds:after, section p:nth-of-type(4):after, section p:nth-of-type(3):after, section p:nth-of-type(2):after, h2:after, h1:after {
+  height: var(--line-height);
+}
+.bg-surrounds:after, section p:nth-of-type(4):after, section p:nth-of-type(3):after, section p:nth-of-type(2):after, h2:after, h1:after {
+  vertical-align: calc(var(--line-height) * -1);
+}
+
+.bg-surrounds-base:before, section p:nth-of-type(1):before, p:before, .bg-surrounds-base:after, section p:nth-of-type(1):after, p:after {
+  height: var(--base-line-height);
+}
+.bg-surrounds-base:after, section p:nth-of-type(1):after, p:after {
+  vertical-align: calc(var(--base-line-height) * -1);
+}
+
+html {
+  font-family: Georgia, serif;
+  --base-font-size: 17px;
+  --base-line-height: 28px;
+  --base-unit: calc(var(--base-line-height) / 2);
+  font-size: var(--base-font-size);
+  line-height: var(--base-line-height);
+  background-image: linear-gradient(to bottom, rgba(0, 0, 0, 0.2) 0%, transparent 10%);
+  background-size: 100% var(--base-unit);
+  background-position: left top;
+}
+@media (min-width: 616px) {
+  html {
+    --base-font-size: 19px;
+    --base-line-height: 30px;
+  }
+}
+@media (min-width: 863px) {
+  html {
+    --base-font-size: 21px;
+    --base-line-height: 34px;
+  }
+}
+@media (min-width: 1232px) {
+  html {
+    --base-font-size: 22px;
+    --base-line-height: 36px;
+  }
+}
+
+article {
+  padding: calc(2 * var(--base-unit)) calc(1.6 * var(--base-unit) * 1.1) calc(2 * var(--base-unit)) calc(2 * var(--base-unit) * 1.1);
+}
+article > section {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(calc(18 * var(--base-unit) * 1.1), 1fr));
+  column-gap: calc(1 * var(--base-unit) * 1.1);
+  padding: calc(1 * var(--base-unit)) 0;
+}
+
+h1, h2 {
+  font-family: Verdana, sans-serif;
+}
+
+h1, h2, p {
+  max-width: calc(36 * var(--base-unit) * 1.1);
+  margin: 0;
+}
+
+h1 {
+  font-size: 60px;
+  --line-height: calc(var(--base-unit) * 5);
+  line-height: var(--line-height);
+}
+@media (min-width: 616px) {
+  h1 {
+    font-size: 66px;
+    --base-unit: 15px;
+    --line-height: calc(var(--base-unit) * 5);
+    line-height: var(--line-height);
+  }
+}
+@media (min-width: 863px) {
+  h1 {
+    font-size: 72px;
+    --base-unit: 17px;
+    --line-height: calc(var(--base-unit) * 5);
+    line-height: var(--line-height);
+  }
+}
+@media (min-width: 1232px) {
+  h1 {
+    font-size: 84px;
+    --base-unit: 18px;
+    --line-height: calc(var(--base-unit) * 5);
+    line-height: var(--line-height);
+  }
+}
+
+h2 {
+  font-size: 40px;
+  --line-height: calc(var(--base-unit) * 3);
+  line-height: var(--line-height);
+}
+@media (min-width: 616px) {
+  h2 {
+    font-size: 44px;
+    --base-unit: 15px;
+    --line-height: calc(var(--base-unit) * 3);
+    line-height: var(--line-height);
+  }
+}
+@media (min-width: 863px) {
+  h2 {
+    font-size: 48px;
+    --base-unit: 17px;
+    --line-height: calc(var(--base-unit) * 3);
+    line-height: var(--line-height);
+  }
+}
+@media (min-width: 1232px) {
+  h2 {
+    font-size: 54px;
+    --base-unit: 18px;
+    --line-height: calc(var(--base-unit) * 3);
+    line-height: var(--line-height);
+  }
+}
+
+section p:nth-of-type(2) {
+  font-size: 21px;
+  --line-height: calc(var(--base-unit) * 2);
+  line-height: var(--line-height);
+}
+@media (min-width: 616px) {
+  section p:nth-of-type(2) {
+    font-size: 21px;
+    --base-unit: 15px;
+    --line-height: calc(var(--base-unit) * 2);
+    line-height: var(--line-height);
+  }
+}
+@media (min-width: 863px) {
+  section p:nth-of-type(2) {
+    font-size: 21px;
+    --base-unit: 17px;
+    --line-height: calc(var(--base-unit) * 2);
+    line-height: var(--line-height);
+  }
+}
+@media (min-width: 1232px) {
+  section p:nth-of-type(2) {
+    font-size: 21px;
+    --base-unit: 18px;
+    --line-height: calc(var(--base-unit) * 2);
+    line-height: var(--line-height);
+  }
+}
+section p:nth-of-type(3) {
+  font-size: 12px;
+  --line-height: calc(var(--base-unit) * 1);
+  line-height: var(--line-height);
+}
+@media (min-width: 616px) {
+  section p:nth-of-type(3) {
+    font-size: 12px;
+    --base-unit: 15px;
+    --line-height: calc(var(--base-unit) * 1);
+    line-height: var(--line-height);
+  }
+}
+@media (min-width: 863px) {
+  section p:nth-of-type(3) {
+    font-size: 12px;
+    --base-unit: 17px;
+    --line-height: calc(var(--base-unit) * 1);
+    line-height: var(--line-height);
+  }
+}
+@media (min-width: 1232px) {
+  section p:nth-of-type(3) {
+    font-size: 12px;
+    --base-unit: 18px;
+    --line-height: calc(var(--base-unit) * 1);
+    line-height: var(--line-height);
+  }
+}
+section p:nth-of-type(4) {
+  font-size: 9px;
+  --line-height: calc(var(--base-unit) * 1);
+  line-height: var(--line-height);
+}
+@media (min-width: 616px) {
+  section p:nth-of-type(4) {
+    font-size: 9px;
+    --base-unit: 15px;
+    --line-height: calc(var(--base-unit) * 1);
+    line-height: var(--line-height);
+  }
+}
+@media (min-width: 863px) {
+  section p:nth-of-type(4) {
+    font-size: 9px;
+    --base-unit: 17px;
+    --line-height: calc(var(--base-unit) * 1);
+    line-height: var(--line-height);
+  }
+}
+@media (min-width: 1232px) {
+  section p:nth-of-type(4) {
+    font-size: 9px;
+    --base-unit: 18px;
+    --line-height: calc(var(--base-unit) * 1);
+    line-height: var(--line-height);
+  }
+}
+
+#gridblock {
+  position: fixed;
+  top: 0;
+  left: calc(1 * var(--base-unit) * 1.1);
+  width: calc(1 * var(--base-unit) * 1.1);
+  height: calc(1 * var(--base-unit));
+  background-color: red;
+}
+
+/*# sourceMappingURL=styles.css.map */

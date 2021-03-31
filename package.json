@@ -1,17 +1,19 @@
 {
   "name": "baselinegrid.scss",
-  "description": "A very simple grid framework for sass",
-  "version": "0.3.0",
+  "description": "A small set of SCSS tools to align text to a baseline grid.",
+  "version": "1.0.0",
   "author": {
-      "name": "Jérôme Vogel",
-      "email": "jerome.vogel@gmail.com"
+    "name": "Jérôme Vogel",
+    "email": "jerome.vogel@gmail.com"
   },
   "main": "baselinegrid.scss",
   "repository": {
-      "type": "git",
-      "url": "https://github.com/jeromev/baselinegrid.scss.git"
+    "type": "git",
+    "url": "https://github.com/jeromev/baselinegrid.scss.git"
   },
   "license": "MIT",
-  "homepage": "https://github.com/jeromev/baselinegrid.scss"
+  "homepage": "https://github.com/jeromev/baselinegrid.scss",
+  "dependencies": {
+    "sanitize.css": "^12.0.1"
+  }
 }
-
