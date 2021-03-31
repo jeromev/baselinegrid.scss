@@ -1,0 +1,386 @@
+/* baselinegrid.scss | MIT License | https://github.com/jeromev/baselinegrid.scss */
+
+//==================================================================================
+// LIBS
+//==================================================================================
+@use "sass:map";
+
+//==================================================================================
+// OPTIONS
+//==================================================================================
+$scale: (
+  's': (
+    'font-size': 17px,
+    'line-height': 28px, // works best in Chrome if this is an integer divisible by 2
+    'min-width': 0 // grid-units
+  ),
+  'm': (
+    'font-size': 19px,
+    'line-height': 30px, // // works best in Chrome if this is an integer divisible by 2
+    'min-width': 40 // grid-units
+  ),
+  'l': (
+    'font-size': 21px,
+    'line-height': 34px, // // works best in Chrome if this is an integer divisible by 2
+    'min-width': 56 // grid-units
+  ),
+  'xl': (
+    'font-size': 22px,
+    'line-height': 36px, // // works best in Chrome if this is an integer divisible by 2
+    'min-width': 80 // grid-units
+  ),
+) !default;
+
+$width-optical-adjustment: 1.1 !default;  // relative to 1 vertical grid-unit
+
+$right-side-adjustment: 0.8 !default;  // relative to 1 hoizontal grid-unit
+
+$debug: 0 !default;
+
+$preset: 'Georgia' !default;
+
+//==================================================================================
+// FUNCTIONS
+//==================================================================================
+@function em($px: 0, $font-size: $_base-font-size) {
+  @return $px / $font-size + em;
+}
+@function rem($px: 0, $font-size: $_base-font-size) {
+  @return $px / $font-size + rem;
+}
+@function horizontal-grid-units($q: 1, $px: null) {
+  @if ($px) {
+    @return ceil($q * $_base-unit * $width-optical-adjustment);
+  } @else {
+    @return calc(#{$q} * var(--base-unit) * #{$width-optical-adjustment});
+  }
+}
+@function h($q: 1, $px: null) {
+  @return horizontal-grid-units($q, $px);
+}
+@function h-right($q: 1) {
+  @return h($q * $right-side-adjustment);
+}
+@function vertical-grid-units($q: 1) {
+  // @return rem($q * $_base-unit);
+  @return calc(#{$q} * var(--base-unit));
+}
+@function v($q: 1) {
+  @return vertical-grid-units($q);
+}
+@function getFromPreset($preset: 'Georgia', $prop: 'EmSize') {
+  @return map.get(map.get($_presets, $preset), $prop);
+}
+@function getFromScale($width: 's', $prop: 'font-size') {
+  @return map.get(map.get($scale, $width), $prop);
+}
+
+//==================================================================================
+// PRIVATE VARS
+//==================================================================================
+$_base-font-size: getFromScale('s', 'font-size'); // (px)
+$_base-scale: 2;
+$_base-unit: getFromScale('s', 'line-height') / $_base-scale; // (px)
+
+//==================================================================================
+// PRESETS
+//==================================================================================
+$_presets: (
+  'Georgia': (
+    'EmSize': 2048,
+    'CapHeight': 1419, // 0.6928710938
+    'XHeight': 986,
+    'Ascent': 1878, // 0.9169921875
+    'Descent': 449, // 0.21923828125
+    'LineGap': 198
+  )
+);
+// Georgia's content area = 
+//  (Ascent + Descent) / EmSize = 
+//  (1878 + 449) / 2048 = 1.1362304688
+// @debug(
+//   (
+//     map.get(map.get($_presets, 'Georgia'), 'Ascent') + 
+//     map.get(map.get($_presets, 'Georgia'), 'Descent')
+//   ) /
+//   map.get(map.get($presets, 'Georgia'), 'EmSize')
+// );
+
+// EmSize / CapHeight
+// @debug (2048 / 1419); // 1.4432699084
+
+// CapHeight / EmSize
+// @debug (1419 / 2048); // 0.6928710938
+// @debug getFromPreset('Georgia', 'CapHeight') / getFromPreset('Georgia', 'EmSize');
+
+$_line-height-normal: (
+  (
+    getFromPreset($preset, 'Ascent') + 
+    getFromPreset($preset, 'Descent') + 
+    getFromPreset($preset, 'LineGap')
+  ) / getFromPreset($preset, 'EmSize')
+);
+// @debug $_line-height-normal; // 1.2329101563
+$_content-area: (
+  $_line-height-normal * getFromPreset($preset, 'CapHeight')
+  / getFromPreset($preset, 'EmSize')
+);
+// @debug $_content-area; // 0.8542478085 relative to font-size
+$_distance-top: (
+  (
+    getFromPreset($preset, 'Ascent') - getFromPreset($preset, 'CapHeight')
+  ) / getFromPreset($preset, 'EmSize')
+);
+// @debug $_distance-top; // 0.2241210938 relative to font-size
+$_distance-bottom: (
+  getFromPreset($preset, 'Descent') / getFromPreset($preset, 'EmSize')
+);
+// @debug $_distance-bottom; // 0.2192382813 relative to font-size
+$_vertical-align: (
+  (
+    $_distance-bottom - 
+    $_distance-top
+  )
+);
+// @debug $_vertical-align; // -0.0048828125  relative to font-size
+
+
+//==================================================================================
+// MIXINS
+//==================================================================================
+
+@mixin debug($v: 0) {
+  @debug "#{$v}";
+  background-color: rgba(255,0,0,0.6);
+  &:before {
+    content: unquote("'" + $v + "'");
+    color: white;
+    padding: 0 h(0.5);
+    position: absolute;
+    background-color: red;
+    font-weight: normal;
+    margin-left: h(-1);
+  }
+}
+
+@mixin pad($q: 1) {
+  padding: v($q) h-right($q) v($q) h($q);
+}
+@mixin marg($q: 1) {
+  margin: v($q) h-right($q) v($q) h($q);
+}
+
+@mixin padh($q: 1) {
+  padding-right: h-right($q);
+  padding-left: h($q);
+}
+@mixin margh($q: 1) {
+  margin-right: h-right($q);
+  margin-left: h($q);
+}
+@mixin padv($q: 1) {
+  padding-top: v($q);
+  padding-bottom: v($q);
+}
+@mixin margv($q: 1) {
+  margin-top: v($q);
+  margin-bottom: v($q);
+}
+
+// begin()
+@mixin begin() {
+  body *:before,
+  body *:after {
+    display: inline-block;
+    vertical-align: baseline;
+  }
+  .bg-content-none {
+    content: '';
+  }
+  .bg-surrounds {
+    &:before, &:after {
+      height: var(--line-height);
+      @extend .bg-content-none;
+    }
+    &:after {
+      vertical-align: calc(var(--line-height) * -1);
+    }
+  }
+  .bg-surrounds-base {
+    &:before, &:after {
+      height: var(--base-line-height);
+      @extend .bg-content-none;
+    }
+    &:after {
+      vertical-align: calc(var(--base-line-height) * -1);
+    }
+  }
+}
+
+// root()
+@mixin root() {
+  --base-font-size: #{getFromScale('s','font-size')};
+  --base-line-height: #{getFromScale('s','line-height')};
+  @each $size, $props in $scale {
+    @if (map.get($props, 'min-width') > 0) {
+      @media (min-width: h(map.get($props, 'min-width'), 1)) {
+        $font-size: getFromScale($size, 'font-size');
+        $line-height: getFromScale($size, 'line-height');
+        --base-font-size: #{$font-size};
+        --base-line-height: #{$line-height};
+      }
+    } 
+  }
+  --base-unit: calc(var(--base-line-height) / #{$_base-scale});
+  font-size: var(--base-font-size);
+  line-height: var(--base-line-height);
+  @if ($debug == 1) {
+    @include show-grid();
+  }
+}
+
+// show-grid()
+// Display the grid as a background image
+@mixin show-grid() {
+  background-image: linear-gradient(
+    to bottom,
+    rgba(0,0,0,0.2) 0%,
+    transparent 10%
+  );
+  background-size: 100% var(--base-unit);
+  background-position: left top;
+}
+
+// set()
+// based on a gist by Razvan Onofrei: https://gist.github.com/razwan/10662500
+// See: 
+//  https://medium.com/@razvanonofrei/aligning-type-to-baseline-the-right-way-using-sass-e258fce47a9b
+// See also:
+//  http://b4d455.fr/basel/index.html
+//  https://iamvdo.me/blog/css-avance-metriques-des-fontes-line-height-et-vertical-align
+//  https://css-tricks.com/how-to-tame-line-height-in-css/
+//
+@mixin set(
+  $font-size: $_base-font-size,
+  $line-height: $_base-unit
+) {
+  // integer number of base units that can fit the given font-size
+  $lines: ceil($font-size / $_base-unit); //@debug($lines);
+	
+  // calculate the new line-height
+	$line-height: $_base-unit * $lines; // @debug($line-height);
+
+  @if ($font-size != $_base-font-size) {
+    font-size: #{$font-size};
+    --line-height: calc(var(--base-unit) * #{$lines});
+    line-height: var(--line-height);
+    @extend .bg-surrounds;
+    @each $size, $props in $scale {
+      @if (map.get($props, 'min-width') > 0) {
+        @media (min-width: h(map.get($props, 'min-width'), 1)) {
+          $base-font-size: getFromScale($size, 'font-size');
+          font-size: $font-size;
+          $base-unit: getFromScale($size, 'line-height') / $_base-scale;
+          --base-unit: #{$base-unit};
+          $lines: ceil($font-size / $base-unit);
+          --line-height: calc(var(--base-unit) * #{$lines});
+          line-height: var(--line-height);
+        }
+      }
+    }
+  } @else {
+    @extend .bg-surrounds-base;
+  }
+  // $translate: $_vertical-align * $font-size;
+  // transform: translateY(rem($translate));
+}
+
+@mixin scale($scale: null) {
+  @if ($scale) {
+    @each $size, $font-size in $scale {
+      @if (getFromScale($size, 'min-width') > 0) {
+        @media (min-width: h(getFromScale($size, 'min-width'), 1)) {
+          font-size: $font-size;
+          $base-unit: getFromScale($size, 'line-height') / $_base-scale;
+          --base-unit: #{$base-unit};
+          $lines: ceil($font-size / $base-unit);
+          --line-height: calc(var(--base-unit) * #{$lines});
+          line-height: var(--line-height);
+        }
+      } @else {
+        $lines: ceil($font-size / $_base-unit);
+        $line-height: $_base-unit * $lines;
+        font-size: #{$font-size};
+        --line-height: calc(var(--base-unit) * #{$lines});
+        line-height: var(--line-height);
+      }
+    }
+  }
+  @extend .bg-surrounds;
+}
+
+
+
+@mixin align-old(
+  $font-size: $_base-font-size, 
+  $offset-top: 0, 
+  $offset-bottom: 0,
+  $media: null
+) {
+
+  $base-font-size: $_base-font-size;
+  @if ($media) {
+    $base-font-size: map.get($medias-base-font-sizes, $media);
+  }
+  // @debug $base-font-size;
+
+  // integer number of base units that can fit the given font-size
+  $lines: ceil($font-size / $_base-unit);
+
+	// calculate the new line-height
+	$line-height: $_base-unit * $lines;  // (px)
+  
+	$baseline-distance: ($_base-unit - $base-cap-height) / $_base-scale * $base-font-size;  // (px)
+	$offset-top: $offset-top * $_base-unit;  // (px)
+	$offset-bottom: $offset-bottom * $_base-unit;  // (px)
+
+  $padding-top: $baseline-distance + $offset-top;
+  $margin-bottom: $line-height - $baseline-distance - $_base-unit + $offset-bottom;
+
+  // print the results
+  @include box(
+    $font-size,
+    $line-height,
+    $padding-top,
+    $margin-bottom,
+    $media,
+  );
+}
+
+// box()
+@mixin box(
+  $font-size: $_base-font-size,
+  $line-height: $_base-unit,
+  $padding-top: 0,
+  $margin-bottom: 0,
+  $media: null,
+) {
+  @if ($media and map.get($medias, $media)) {
+    @media (min-width: h(map.get($medias, $media))) {
+      font-size: rem($font-size, map.get($medias-base-font-sizes, $media));
+      // line-height: rem($line-height);
+      padding-top: rem($padding-top, map.get($medias-base-font-sizes, $media));
+      margin-bottom: rem($margin-bottom, map.get($medias-base-font-sizes, $media));
+    }
+  } @else {
+    font-size: rem($font-size);
+    line-height: rem($line-height);
+    padding-top: rem($padding-top);
+    padding-bottom: rem($margin-bottom);
+    vertical-align: rem($_vertical-align * $font-size);
+
+    // @if ($debug == 1) {
+    //   @include debug($font-size);
+    // }
+  }
+}
