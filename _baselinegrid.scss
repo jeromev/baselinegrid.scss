@@ -95,12 +95,12 @@ $_presets: (
     'LineGap': 198
   )
 );
-// Georgia's content area = 
-//  (Ascent + Descent) / EmSize = 
+// Georgia's content area =
+//  (Ascent + Descent) / EmSize =
 //  (1878 + 449) / 2048 = 1.1362304688
 // @debug(
 //   (
-//     map.get(map.get($_presets, 'Georgia'), 'Ascent') + 
+//     map.get(map.get($_presets, 'Georgia'), 'Ascent') +
 //     map.get(map.get($_presets, 'Georgia'), 'Descent')
 //   ) /
 //   map.get(map.get($presets, 'Georgia'), 'EmSize')
@@ -115,8 +115,8 @@ $_presets: (
 
 $_line-height-normal: (
   (
-    getFromPreset($preset, 'Ascent') + 
-    getFromPreset($preset, 'Descent') + 
+    getFromPreset($preset, 'Ascent') +
+    getFromPreset($preset, 'Descent') +
     getFromPreset($preset, 'LineGap')
   ) / getFromPreset($preset, 'EmSize')
 );
@@ -138,7 +138,7 @@ $_distance-bottom: (
 // @debug $_distance-bottom; // 0.2192382813 relative to font-size
 $_vertical-align: (
   (
-    $_distance-bottom - 
+    $_distance-bottom -
     $_distance-top
   )
 );
@@ -194,27 +194,6 @@ $_vertical-align: (
     display: inline-block;
     vertical-align: baseline;
   }
-  .bg-content-none {
-    content: '';
-  }
-  .bg-surrounds {
-    &:before, &:after {
-      height: var(--line-height);
-      @extend .bg-content-none;
-    }
-    &:after {
-      vertical-align: calc(var(--line-height) * -1);
-    }
-  }
-  .bg-surrounds-base {
-    &:before, &:after {
-      height: var(--base-line-height);
-      @extend .bg-content-none;
-    }
-    &:after {
-      vertical-align: calc(var(--base-line-height) * -1);
-    }
-  }
 }
 
 // root()
@@ -229,7 +208,7 @@ $_vertical-align: (
         --base-font-size: #{$font-size};
         --base-line-height: #{$line-height};
       }
-    } 
+    }
   }
   --base-unit: calc(var(--base-line-height) / #{$_base-scale});
   font-size: var(--base-font-size);
@@ -253,7 +232,7 @@ $_vertical-align: (
 
 // set()
 // based on a gist by Razvan Onofrei: https://gist.github.com/razwan/10662500
-// See: 
+// See:
 //  https://medium.com/@razvanonofrei/aligning-type-to-baseline-the-right-way-using-sass-e258fce47a9b
 // See also:
 //  http://b4d455.fr/basel/index.html
@@ -266,7 +245,7 @@ $_vertical-align: (
 ) {
   // integer number of base units that can fit the given font-size
   $lines: ceil($font-size / $_base-unit); //@debug($lines);
-	
+
   // calculate the new line-height
 	$line-height: $_base-unit * $lines; // @debug($line-height);
 
@@ -274,7 +253,13 @@ $_vertical-align: (
     font-size: #{$font-size};
     --line-height: calc(var(--base-unit) * #{$lines});
     line-height: var(--line-height);
-    @extend .bg-surrounds;
+    &:before, &:after {
+      height: var(--line-height);
+      content: '';
+    }
+    &:after {
+      vertical-align: calc(var(--line-height) * -1);
+    }
     @each $size, $props in $scale {
       @if (map.get($props, 'min-width') > 0) {
         @media (min-width: h(map.get($props, 'min-width'), 1)) {
@@ -289,7 +274,13 @@ $_vertical-align: (
       }
     }
   } @else {
-    @extend .bg-surrounds-base;
+    &:before, &:after {
+      height: var(--base-line-height);
+      content: '';
+    }
+    &:after {
+      vertical-align: calc(var(--base-line-height) * -1);
+    }
   }
   // $translate: $_vertical-align * $font-size;
   // transform: translateY(rem($translate));
@@ -316,14 +307,20 @@ $_vertical-align: (
       }
     }
   }
-  @extend .bg-surrounds;
+  &:before, &:after {
+    height: var(--line-height);
+    content: '';
+  }
+  &:after {
+    vertical-align: calc(var(--line-height) * -1);
+  }
 }
 
 
 
 @mixin align-old(
-  $font-size: $_base-font-size, 
-  $offset-top: 0, 
+  $font-size: $_base-font-size,
+  $offset-top: 0,
   $offset-bottom: 0,
   $media: null
 ) {
@@ -339,7 +336,7 @@ $_vertical-align: (
 
 	// calculate the new line-height
 	$line-height: $_base-unit * $lines;  // (px)
-  
+
 	$baseline-distance: ($_base-unit - $base-cap-height) / $_base-scale * $base-font-size;  // (px)
 	$offset-top: $offset-top * $_base-unit;  // (px)
 	$offset-bottom: $offset-bottom * $_base-unit;  // (px)
