@@ -6,24 +6,6 @@ body *:after {
   vertical-align: baseline;
 }
 
-.bg-content-none, .bg-surrounds-base:before, section p:nth-of-type(1):before, p:before, .bg-surrounds-base:after, section p:nth-of-type(1):after, p:after, .bg-surrounds:before, section p:nth-of-type(4):before, section p:nth-of-type(3):before, section p:nth-of-type(2):before, h2:before, h1:before, .bg-surrounds:after, section p:nth-of-type(4):after, section p:nth-of-type(3):after, section p:nth-of-type(2):after, h2:after, h1:after {
-  content: "";
-}
-
-.bg-surrounds:before, section p:nth-of-type(4):before, section p:nth-of-type(3):before, section p:nth-of-type(2):before, h2:before, h1:before, .bg-surrounds:after, section p:nth-of-type(4):after, section p:nth-of-type(3):after, section p:nth-of-type(2):after, h2:after, h1:after {
-  height: var(--line-height);
-}
-.bg-surrounds:after, section p:nth-of-type(4):after, section p:nth-of-type(3):after, section p:nth-of-type(2):after, h2:after, h1:after {
-  vertical-align: calc(var(--line-height) * -1);
-}
-
-.bg-surrounds-base:before, section p:nth-of-type(1):before, p:before, .bg-surrounds-base:after, section p:nth-of-type(1):after, p:after {
-  height: var(--base-line-height);
-}
-.bg-surrounds-base:after, section p:nth-of-type(1):after, p:after {
-  vertical-align: calc(var(--base-line-height) * -1);
-}
-
 html {
   font-family: Georgia, serif;
   --base-font-size: 17px;
@@ -102,6 +84,13 @@ h1 {
     line-height: var(--line-height);
   }
 }
+h1:before, h1:after {
+  height: var(--line-height);
+  content: "";
+}
+h1:after {
+  vertical-align: calc(var(--line-height) * -1);
+}
 
 h2 {
   font-size: 40px;
@@ -132,11 +121,40 @@ h2 {
     line-height: var(--line-height);
   }
 }
+h2:before, h2:after {
+  height: var(--line-height);
+  content: "";
+}
+h2:after {
+  vertical-align: calc(var(--line-height) * -1);
+}
 
+p:before, p:after {
+  height: var(--base-line-height);
+  content: "";
+}
+p:after {
+  vertical-align: calc(var(--base-line-height) * -1);
+}
+
+section p:nth-of-type(1):before, section p:nth-of-type(1):after {
+  height: var(--base-line-height);
+  content: "";
+}
+section p:nth-of-type(1):after {
+  vertical-align: calc(var(--base-line-height) * -1);
+}
 section p:nth-of-type(2) {
   font-size: 21px;
   --line-height: calc(var(--base-unit) * 2);
   line-height: var(--line-height);
+}
+section p:nth-of-type(2):before, section p:nth-of-type(2):after {
+  height: var(--line-height);
+  content: "";
+}
+section p:nth-of-type(2):after {
+  vertical-align: calc(var(--line-height) * -1);
 }
 @media (min-width: 616px) {
   section p:nth-of-type(2) {
@@ -167,6 +185,13 @@ section p:nth-of-type(3) {
   --line-height: calc(var(--base-unit) * 1);
   line-height: var(--line-height);
 }
+section p:nth-of-type(3):before, section p:nth-of-type(3):after {
+  height: var(--line-height);
+  content: "";
+}
+section p:nth-of-type(3):after {
+  vertical-align: calc(var(--line-height) * -1);
+}
 @media (min-width: 616px) {
   section p:nth-of-type(3) {
     font-size: 12px;
@@ -195,6 +220,13 @@ section p:nth-of-type(4) {
   font-size: 9px;
   --line-height: calc(var(--base-unit) * 1);
   line-height: var(--line-height);
+}
+section p:nth-of-type(4):before, section p:nth-of-type(4):after {
+  height: var(--line-height);
+  content: "";
+}
+section p:nth-of-type(4):after {
+  vertical-align: calc(var(--line-height) * -1);
 }
 @media (min-width: 616px) {
   section p:nth-of-type(4) {
