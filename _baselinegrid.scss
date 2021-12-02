@@ -4,6 +4,7 @@
 // LIBS
 //==================================================================================
 @use "sass:map";
+@use 'sass:math';
 
 //==================================================================================
 // OPTIONS
@@ -43,10 +44,10 @@ $preset: 'Georgia' !default;
 // FUNCTIONS
 //==================================================================================
 @function em($px: 0, $font-size: $_base-font-size) {
-  @return $px / $font-size + em;
+  @return math.div($px, $font-size) + em;
 }
 @function rem($px: 0, $font-size: $_base-font-size) {
-  @return $px / $font-size + rem;
+  @return math.div($px, $font-size) + rem;
 }
 @function horizontal-grid-units($q: 1, $px: null) {
   @if ($px) {
@@ -80,7 +81,7 @@ $preset: 'Georgia' !default;
 //==================================================================================
 $_base-font-size: getFromScale('s', 'font-size'); // (px)
 $_base-scale: 2;
-$_base-unit: getFromScale('s', 'line-height') / $_base-scale; // (px)
+$_base-unit: math.div(getFromScale('s', 'line-height'), $_base-scale); // (px)
 
 //==================================================================================
 // PRESETS
@@ -122,18 +123,18 @@ $_line-height-normal: (
 );
 // @debug $_line-height-normal; // 1.2329101563
 $_content-area: (
-  $_line-height-normal * getFromPreset($preset, 'CapHeight')
-  / getFromPreset($preset, 'EmSize')
+  math.div($_line-height-normal * getFromPreset($preset, 'CapHeight'),
+  getFromPreset($preset, 'EmSize'))
 );
 // @debug $_content-area; // 0.8542478085 relative to font-size
 $_distance-top: (
-  (
+  math.div((
     getFromPreset($preset, 'Ascent') - getFromPreset($preset, 'CapHeight')
-  ) / getFromPreset($preset, 'EmSize')
+  ), getFromPreset($preset, 'EmSize'))
 );
 // @debug $_distance-top; // 0.2241210938 relative to font-size
 $_distance-bottom: (
-  getFromPreset($preset, 'Descent') / getFromPreset($preset, 'EmSize')
+  math.div(getFromPreset($preset, 'Descent'), getFromPreset($preset, 'EmSize'))
 );
 // @debug $_distance-bottom; // 0.2192382813 relative to font-size
 $_vertical-align: (
@@ -244,7 +245,7 @@ $_vertical-align: (
   $line-height: $_base-unit
 ) {
   // integer number of base units that can fit the given font-size
-  $lines: ceil($font-size / $_base-unit); //@debug($lines);
+  $lines: ceil(math.div($font-size, $_base-unit)); //@debug($lines);
 
   // calculate the new line-height
 	$line-height: $_base-unit * $lines; // @debug($line-height);
@@ -265,9 +266,9 @@ $_vertical-align: (
         @media (min-width: h(map.get($props, 'min-width'), 1)) {
           $base-font-size: getFromScale($size, 'font-size');
           font-size: $font-size;
-          $base-unit: getFromScale($size, 'line-height') / $_base-scale;
+          $base-unit: math.div(getFromScale($size, 'line-height'), $_base-scale);
           --base-unit: #{$base-unit};
-          $lines: ceil($font-size / $base-unit);
+          $lines: ceil(math.div($font-size, $base-unit));
           --line-height: calc(var(--base-unit) * #{$lines});
           line-height: var(--line-height);
         }
@@ -292,14 +293,14 @@ $_vertical-align: (
       @if (getFromScale($size, 'min-width') > 0) {
         @media (min-width: h(getFromScale($size, 'min-width'), 1)) {
           font-size: $font-size;
-          $base-unit: getFromScale($size, 'line-height') / $_base-scale;
+          $base-unit: math.div(getFromScale($size, 'line-height'), $_base-scale);
           --base-unit: #{$base-unit};
-          $lines: ceil($font-size / $base-unit);
+          $lines: ceil(math.div($font-size, $base-unit));
           --line-height: calc(var(--base-unit) * #{$lines});
           line-height: var(--line-height);
         }
       } @else {
-        $lines: ceil($font-size / $_base-unit);
+        $lines: ceil(math.div($font-size, $_base-unit));
         $line-height: $_base-unit * $lines;
         font-size: #{$font-size};
         --line-height: calc(var(--base-unit) * #{$lines});
@@ -332,12 +333,12 @@ $_vertical-align: (
   // @debug $base-font-size;
 
   // integer number of base units that can fit the given font-size
-  $lines: ceil($font-size / $_base-unit);
+  $lines: ceil(math.div($font-size, $_base-unit));
 
 	// calculate the new line-height
 	$line-height: $_base-unit * $lines;  // (px)
 
-	$baseline-distance: ($_base-unit - $base-cap-height) / $_base-scale * $base-font-size;  // (px)
+	$baseline-distance: math.div(($_base-unit - $base-cap-height), $_base-scale) * $base-font-size;  // (px)
 	$offset-top: $offset-top * $_base-unit;  // (px)
 	$offset-bottom: $offset-bottom * $_base-unit;  // (px)
 
