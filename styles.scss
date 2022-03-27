@@ -26,7 +26,7 @@ h1, h2 {
 }
 
 h1, h2, p {
-  max-width: bg.h(38);
+  max-width: bg.h(40);
   margin: 0;
   transition: all .3s;
 }
@@ -34,9 +34,9 @@ h1, h2, p {
 h1 {
   @include bg.scale((
     's': 54px,
-    'm': 60px,
-    'l': 68px,
-    'xl': 72px
+    'm': 61px,
+    'l': 69px,
+    'xl': 73px
   ));
 }
 
@@ -45,7 +45,7 @@ h2 {
     's': 36px,
     'm': 40px,
     'l': 46px,
-    'xl': 54px
+    'xl': 50px
   ));
 }
 p {
