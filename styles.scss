@@ -12,7 +12,8 @@ html {
 }
 
 article {
-  @include bg.pad(2);
+  @include bg.pad-scale();
+  transition: padding .3s cubic-bezier(.65,.05,.36,1);
   > section {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(bg.h(18), 1fr));
@@ -28,7 +29,7 @@ h1, h2 {
 h1, h2, p {
   max-width: bg.h(40);
   margin: 0;
-  transition: all .3s;
+  transition: all .3s cubic-bezier(.65,.05,.36,1);
 }
 
 h1 {

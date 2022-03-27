@@ -37,7 +37,23 @@ html {
 }
 
 article {
-  padding: calc(2 * var(--base-unit)) calc(1.6 * var(--base-unit) * 1.1) calc(2 * var(--base-unit)) calc(2 * var(--base-unit) * 1.1);
+  padding: calc(1 * var(--base-unit)) calc(0.8 * var(--base-unit) * 1.1) calc(1 * var(--base-unit)) calc(1 * var(--base-unit) * 1.1);
+  transition: padding 0.3s cubic-bezier(0.65, 0.05, 0.36, 1);
+}
+@media (min-width: 616px) {
+  article {
+    padding: calc(2 * var(--base-unit)) calc(1.6 * var(--base-unit) * 1.1) calc(2 * var(--base-unit)) calc(2 * var(--base-unit) * 1.1);
+  }
+}
+@media (min-width: 863px) {
+  article {
+    padding: calc(3 * var(--base-unit)) calc(2.4 * var(--base-unit) * 1.1) calc(3 * var(--base-unit)) calc(3 * var(--base-unit) * 1.1);
+  }
+}
+@media (min-width: 1232px) {
+  article {
+    padding: calc(4 * var(--base-unit)) calc(3.2 * var(--base-unit) * 1.1) calc(4 * var(--base-unit)) calc(4 * var(--base-unit) * 1.1);
+  }
 }
 article > section {
   display: grid;
@@ -53,7 +69,7 @@ h1, h2 {
 h1, h2, p {
   max-width: calc(40 * var(--base-unit) * 1.1);
   margin: 0;
-  transition: all 0.3s;
+  transition: all 0.3s cubic-bezier(0.65, 0.05, 0.36, 1);
 }
 
 h1 {
