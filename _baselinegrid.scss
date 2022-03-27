@@ -13,22 +13,26 @@ $scale: (
   's': (
     'font-size': 17px,
     'line-height': 28px, // works best in Chrome if this is an integer divisible by 2
-    'min-width': 0 // grid-units
+    'min-width': 0, // grid-units
+    'pad': 1 // grid-units
   ),
   'm': (
     'font-size': 19px,
     'line-height': 30px, // // works best in Chrome if this is an integer divisible by 2
-    'min-width': 40 // grid-units
+    'min-width': 40, // grid-units
+    'pad': 2 // grid-units
   ),
   'l': (
     'font-size': 21px,
     'line-height': 34px, // // works best in Chrome if this is an integer divisible by 2
-    'min-width': 56 // grid-units
+    'min-width': 56, // grid-units
+    'pad': 3 // grid-units
   ),
   'xl': (
     'font-size': 23px,
     'line-height': 36px, // // works best in Chrome if this is an integer divisible by 2
-    'min-width': 80 // grid-units
+    'min-width': 80, // grid-units
+    'pad': 4 // grid-units
   ),
 ) !default;
 
@@ -169,7 +173,6 @@ $_vertical-align: (
 @mixin marg($q: 1) {
   margin: v($q) h-right($q) v($q) h($q);
 }
-
 @mixin padh($q: 1) {
   padding-right: h-right($q);
   padding-left: h($q);
@@ -185,6 +188,16 @@ $_vertical-align: (
 @mixin margv($q: 1) {
   margin-top: v($q);
   margin-bottom: v($q);
+}
+@mixin pad-scale() {
+  @include pad(getFromScale('s','pad'));
+  @each $size, $props in $scale {
+    @if (map.get($props, 'min-width') > 0) {
+      @media (min-width: h(map.get($props, 'min-width'), 1)) {
+        @include pad(getFromScale($size, 'pad'));
+      }
+    }
+  }
 }
 
 // begin()
