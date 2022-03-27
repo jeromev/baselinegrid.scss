@@ -162,7 +162,7 @@ section p:nth-of-type(1):after {
   vertical-align: calc(var(--base-line-height) * -1);
 }
 section p:nth-of-type(2) {
-  font-size: 21px;
+  font-size: 23px;
   --line-height: calc(var(--base-unit) * 2);
   line-height: var(--line-height);
 }
@@ -175,7 +175,7 @@ section p:nth-of-type(2):after {
 }
 @media (min-width: 616px) {
   section p:nth-of-type(2) {
-    font-size: 21px;
+    font-size: 23px;
     --base-unit: 15px;
     --line-height: calc(var(--base-unit) * 2);
     line-height: var(--line-height);
@@ -183,7 +183,7 @@ section p:nth-of-type(2):after {
 }
 @media (min-width: 863px) {
   section p:nth-of-type(2) {
-    font-size: 21px;
+    font-size: 23px;
     --base-unit: 17px;
     --line-height: calc(var(--base-unit) * 2);
     line-height: var(--line-height);
@@ -191,7 +191,7 @@ section p:nth-of-type(2):after {
 }
 @media (min-width: 1232px) {
   section p:nth-of-type(2) {
-    font-size: 21px;
+    font-size: 23px;
     --base-unit: 18px;
     --line-height: calc(var(--base-unit) * 2);
     line-height: var(--line-height);
