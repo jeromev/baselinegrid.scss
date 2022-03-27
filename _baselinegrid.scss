@@ -26,7 +26,7 @@ $scale: (
     'min-width': 56 // grid-units
   ),
   'xl': (
-    'font-size': 22px,
+    'font-size': 23px,
     'line-height': 36px, // // works best in Chrome if this is an integer divisible by 2
     'min-width': 80 // grid-units
   ),
@@ -115,11 +115,10 @@ $_presets: (
 // @debug getFromPreset('Georgia', 'CapHeight') / getFromPreset('Georgia', 'EmSize');
 
 $_line-height-normal: (
-  (
-    getFromPreset($preset, 'Ascent') +
-    getFromPreset($preset, 'Descent') +
-    getFromPreset($preset, 'LineGap')
-  ) / getFromPreset($preset, 'EmSize')
+  math.div(
+    getFromPreset($preset, "Ascent") + getFromPreset($preset, "Descent") + getFromPreset($preset, "LineGap"),
+    getFromPreset($preset, "EmSize")
+  )
 );
 // @debug $_line-height-normal; // 1.2329101563
 $_content-area: (
