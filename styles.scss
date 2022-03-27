@@ -58,7 +58,7 @@ section p {
     @include bg.set();
   }
   &:nth-of-type(2) {
-    @include bg.set(21px);
+    @include bg.set(23px);
   }
   &:nth-of-type(3) {
     @include bg.set(11px);
