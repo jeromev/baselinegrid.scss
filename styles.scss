@@ -26,24 +26,25 @@ h1, h2 {
 }
 
 h1, h2, p {
-  max-width: bg.h(36);
+  max-width: bg.h(38);
   margin: 0;
+  transition: all .3s;
 }
 
 h1 {
   @include bg.scale((
-    's': 60px,
-    'm': 66px,
-    'l': 72px,
-    'xl': 84px
+    's': 54px,
+    'm': 60px,
+    'l': 68px,
+    'xl': 72px
   ));
 }
 
 h2 {
   @include bg.scale((
-    's': 40px,
-    'm': 44px,
-    'l': 48px,
+    's': 36px,
+    'm': 40px,
+    'l': 46px,
     'xl': 54px
   ));
 }
@@ -59,10 +60,8 @@ section p {
     @include bg.set(21px);
   }
   &:nth-of-type(3) {
-    @include bg.set(12px);
-  }
-  &:nth-of-type(4) {
-    @include bg.set(9px);
+    @include bg.set(11px);
+    padding-top: bg.v();
   }
 }
 

@@ -31,7 +31,7 @@ html {
 }
 @media (min-width: 1232px) {
   html {
-    --base-font-size: 22px;
+    --base-font-size: 23px;
     --base-line-height: 36px;
   }
 }
@@ -51,36 +51,37 @@ h1, h2 {
 }
 
 h1, h2, p {
-  max-width: calc(36 * var(--base-unit) * 1.1);
+  max-width: calc(38 * var(--base-unit) * 1.1);
   margin: 0;
+  transition: all 0.3s;
 }
 
 h1 {
-  font-size: 60px;
-  --line-height: calc(var(--base-unit) * 5);
+  font-size: 54px;
+  --line-height: calc(var(--base-unit) * 4);
   line-height: var(--line-height);
 }
 @media (min-width: 616px) {
   h1 {
-    font-size: 66px;
+    font-size: 60px;
     --base-unit: 15px;
-    --line-height: calc(var(--base-unit) * 5);
+    --line-height: calc(var(--base-unit) * 4);
     line-height: var(--line-height);
   }
 }
 @media (min-width: 863px) {
   h1 {
-    font-size: 72px;
+    font-size: 68px;
     --base-unit: 17px;
-    --line-height: calc(var(--base-unit) * 5);
+    --line-height: calc(var(--base-unit) * 4);
     line-height: var(--line-height);
   }
 }
 @media (min-width: 1232px) {
   h1 {
-    font-size: 84px;
+    font-size: 72px;
     --base-unit: 18px;
-    --line-height: calc(var(--base-unit) * 5);
+    --line-height: calc(var(--base-unit) * 4);
     line-height: var(--line-height);
   }
 }
@@ -93,13 +94,13 @@ h1:after {
 }
 
 h2 {
-  font-size: 40px;
+  font-size: 36px;
   --line-height: calc(var(--base-unit) * 3);
   line-height: var(--line-height);
 }
 @media (min-width: 616px) {
   h2 {
-    font-size: 44px;
+    font-size: 40px;
     --base-unit: 15px;
     --line-height: calc(var(--base-unit) * 3);
     line-height: var(--line-height);
@@ -107,7 +108,7 @@ h2 {
 }
 @media (min-width: 863px) {
   h2 {
-    font-size: 48px;
+    font-size: 46px;
     --base-unit: 17px;
     --line-height: calc(var(--base-unit) * 3);
     line-height: var(--line-height);
@@ -181,9 +182,10 @@ section p:nth-of-type(2):after {
   }
 }
 section p:nth-of-type(3) {
-  font-size: 12px;
+  font-size: 11px;
   --line-height: calc(var(--base-unit) * 1);
   line-height: var(--line-height);
+  padding-top: calc(1 * var(--base-unit));
 }
 section p:nth-of-type(3):before, section p:nth-of-type(3):after {
   height: var(--line-height);
@@ -194,7 +196,7 @@ section p:nth-of-type(3):after {
 }
 @media (min-width: 616px) {
   section p:nth-of-type(3) {
-    font-size: 12px;
+    font-size: 11px;
     --base-unit: 15px;
     --line-height: calc(var(--base-unit) * 1);
     line-height: var(--line-height);
@@ -202,7 +204,7 @@ section p:nth-of-type(3):after {
 }
 @media (min-width: 863px) {
   section p:nth-of-type(3) {
-    font-size: 12px;
+    font-size: 11px;
     --base-unit: 17px;
     --line-height: calc(var(--base-unit) * 1);
     line-height: var(--line-height);
@@ -210,43 +212,7 @@ section p:nth-of-type(3):after {
 }
 @media (min-width: 1232px) {
   section p:nth-of-type(3) {
-    font-size: 12px;
-    --base-unit: 18px;
-    --line-height: calc(var(--base-unit) * 1);
-    line-height: var(--line-height);
-  }
-}
-section p:nth-of-type(4) {
-  font-size: 9px;
-  --line-height: calc(var(--base-unit) * 1);
-  line-height: var(--line-height);
-}
-section p:nth-of-type(4):before, section p:nth-of-type(4):after {
-  height: var(--line-height);
-  content: "";
-}
-section p:nth-of-type(4):after {
-  vertical-align: calc(var(--line-height) * -1);
-}
-@media (min-width: 616px) {
-  section p:nth-of-type(4) {
-    font-size: 9px;
-    --base-unit: 15px;
-    --line-height: calc(var(--base-unit) * 1);
-    line-height: var(--line-height);
-  }
-}
-@media (min-width: 863px) {
-  section p:nth-of-type(4) {
-    font-size: 9px;
-    --base-unit: 17px;
-    --line-height: calc(var(--base-unit) * 1);
-    line-height: var(--line-height);
-  }
-}
-@media (min-width: 1232px) {
-  section p:nth-of-type(4) {
-    font-size: 9px;
+    font-size: 11px;
     --base-unit: 18px;
     --line-height: calc(var(--base-unit) * 1);
     line-height: var(--line-height);
