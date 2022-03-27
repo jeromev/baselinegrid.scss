@@ -51,7 +51,7 @@ h1, h2 {
 }
 
 h1, h2, p {
-  max-width: calc(38 * var(--base-unit) * 1.1);
+  max-width: calc(40 * var(--base-unit) * 1.1);
   margin: 0;
   transition: all 0.3s;
 }
@@ -63,25 +63,25 @@ h1 {
 }
 @media (min-width: 616px) {
   h1 {
-    font-size: 60px;
+    font-size: 61px;
     --base-unit: 15px;
-    --line-height: calc(var(--base-unit) * 4);
+    --line-height: calc(var(--base-unit) * 5);
     line-height: var(--line-height);
   }
 }
 @media (min-width: 863px) {
   h1 {
-    font-size: 68px;
+    font-size: 69px;
     --base-unit: 17px;
-    --line-height: calc(var(--base-unit) * 4);
+    --line-height: calc(var(--base-unit) * 5);
     line-height: var(--line-height);
   }
 }
 @media (min-width: 1232px) {
   h1 {
-    font-size: 72px;
+    font-size: 73px;
     --base-unit: 18px;
-    --line-height: calc(var(--base-unit) * 4);
+    --line-height: calc(var(--base-unit) * 5);
     line-height: var(--line-height);
   }
 }
@@ -116,7 +116,7 @@ h2 {
 }
 @media (min-width: 1232px) {
   h2 {
-    font-size: 54px;
+    font-size: 50px;
     --base-unit: 18px;
     --line-height: calc(var(--base-unit) * 3);
     line-height: var(--line-height);
