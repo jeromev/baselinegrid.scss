@@ -209,6 +209,10 @@ $_vertical-align: (
   }
 }
 
+@mixin set-scale($my-scale: $scale) {
+  $scale: $my-scale;
+}
+
 // root()
 @mixin root() {
   --base-font-size: #{getFromScale('s','font-size')};
@@ -331,10 +335,10 @@ $_vertical-align: (
       @each $size, $value in $scale {
         @if (getFromScale($size, 'min-width') > 0) {
           @media (min-width: h(getFromScale($size, 'min-width'), 1)) {
-            #{$prop}: h($value);
+            #{$prop}: $value;
           }
         } @else {
-          #{$prop}: h($value);
+          #{$prop}: $value;
         }
       }
     }
