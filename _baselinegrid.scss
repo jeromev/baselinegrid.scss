@@ -299,33 +299,45 @@ $_vertical-align: (
   // transform: translateY(rem($translate));
 }
 
-@mixin scale($scale: null) {
+@mixin scale($prop: 'font-size', $scale: null) {
   @if ($scale) {
-    @each $size, $font-size in $scale {
-      @if (getFromScale($size, 'min-width') > 0) {
-        @media (min-width: h(getFromScale($size, 'min-width'), 1)) {
-          font-size: $font-size;
-          $base-unit: math.div(getFromScale($size, 'line-height'), $_base-scale);
-          --base-unit: #{$base-unit};
-          $lines: ceil(math.div($font-size, $base-unit));
+    @if ($prop == 'font-size') {
+      @each $size, $font-size in $scale {
+        @if (getFromScale($size, 'min-width') > 0) {
+          @media (min-width: h(getFromScale($size, 'min-width'), 1)) {
+            font-size: $font-size;
+            $base-unit: math.div(getFromScale($size, 'line-height'), $_base-scale);
+            --base-unit: #{$base-unit};
+            $lines: ceil(math.div($font-size, $base-unit));
+            --line-height: calc(var(--base-unit) * #{$lines});
+            line-height: var(--line-height);
+          }
+        } @else {
+          $lines: ceil(math.div($font-size, $_base-unit));
+          $line-height: $_base-unit * $lines;
+          font-size: #{$font-size};
           --line-height: calc(var(--base-unit) * #{$lines});
           line-height: var(--line-height);
         }
-      } @else {
-        $lines: ceil(math.div($font-size, $_base-unit));
-        $line-height: $_base-unit * $lines;
-        font-size: #{$font-size};
-        --line-height: calc(var(--base-unit) * #{$lines});
-        line-height: var(--line-height);
+      }
+      &:before, &:after {
+        height: var(--line-height);
+        content: '';
+      }
+      &:after {
+        vertical-align: calc(var(--line-height) * -1);
+      }
+    } @else {
+      @each $size, $value in $scale {
+        @if (getFromScale($size, 'min-width') > 0) {
+          @media (min-width: h(getFromScale($size, 'min-width'), 1)) {
+            #{$prop}: h($value);
+          }
+        } @else {
+          #{$prop}: h($value);
+        }
       }
     }
-  }
-  &:before, &:after {
-    height: var(--line-height);
-    content: '';
-  }
-  &:after {
-    vertical-align: calc(var(--line-height) * -1);
   }
 }
 
