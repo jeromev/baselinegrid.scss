@@ -40,7 +40,7 @@ html {
   @include bg.root();
 }
 h1 {
-  @include bg.scale((
+  @include bg.scale('font-size', (
     's': 60px,
     'm': 66px,
     'l': 72px,
@@ -48,7 +48,7 @@ h1 {
   ));
 }
 h2 {
-  @include bg.scale((
+  @include bg.scale('font-size', (
     's': 40px,
     'm': 44px,
     'l': 48px,
@@ -58,5 +58,4 @@ h2 {
 p {
   @include bg.set();
 }
-</code></pre> 
-
+</code></pre>

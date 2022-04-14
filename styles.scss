@@ -33,7 +33,7 @@ h1, h2, p {
 }
 
 h1 {
-  @include bg.scale((
+  @include bg.scale('font-size', (
     's': 54px,
     'm': 61px,
     'l': 69px,
@@ -42,7 +42,7 @@ h1 {
 }
 
 h2 {
-  @include bg.scale((
+  @include bg.scale('font-size', (
     's': 36px,
     'm': 40px,
     'l': 46px,
