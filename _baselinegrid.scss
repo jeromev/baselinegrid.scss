@@ -199,6 +199,16 @@ $_vertical-align: (
     }
   }
 }
+@mixin padh-scale() {
+  @include padh(getFromScale('s','pad'));
+  @each $size, $props in $scale {
+    @if (map.get($props, 'min-width') > 0) {
+      @media (min-width: h(map.get($props, 'min-width'), 1)) {
+        @include padh(getFromScale($size, 'pad'));
+      }
+    }
+  }
+}
 
 // begin()
 @mixin begin() {
