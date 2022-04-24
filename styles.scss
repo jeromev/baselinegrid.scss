@@ -34,35 +34,52 @@ h1, h2, p {
 
 h1 {
   @include bg.scale('font-size', (
-    's': 54px,
-    'm': 61px,
-    'l': 69px,
-    'xl': 73px
+    'xs': 35px,
+    's': 38px,
+    'm': 60px,
+    'l': 65px,
+    'xl': 70px,
+    'xxl': 73px
   ));
 }
 
 h2 {
   @include bg.scale('font-size', (
-    's': 36px,
-    'm': 40px,
-    'l': 46px,
-    'xl': 50px
+    'xs': 30px,
+    's': 34px,
+    'm': 42px,
+    'l': 44px,
+    'xl': 48px,
+    'xxl': 52px
   ));
 }
 p {
   @include bg.set();
 }
 
-section p {
-  &:nth-of-type(1) {
-    @include bg.set();
+section {
+  p, figcaption {
+    &:nth-of-type(1) {
+      @include bg.set();
+    }
+    &:nth-of-type(2) {
+      @include bg.set(23px);
+    }
+    &:nth-of-type(3) {
+      @include bg.set(11px);
+      padding-top: bg.v();
+    }
   }
-  &:nth-of-type(2) {
-    @include bg.set(23px);
-  }
-  &:nth-of-type(3) {
-    @include bg.set(11px);
-    padding-top: bg.v();
+}
+
+figure {
+  margin: 0;
+  padding-top: bg.v();
+  img {
+    width: 100%;
+    object-fit: cover;
+    height: bg.v(20);
+    display: block;
   }
 }
 

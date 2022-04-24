@@ -8,8 +8,8 @@ body *:after {
 
 html {
   font-family: Georgia, serif;
-  --base-font-size: 17px;
-  --base-line-height: 28px;
+  --base-font-size: 16px;
+  --base-line-height: 26px;
   --base-unit: calc(var(--base-line-height) / 2);
   font-size: var(--base-font-size);
   line-height: var(--base-line-height);
@@ -17,19 +17,31 @@ html {
   background-size: 100% var(--base-unit);
   background-position: left top;
 }
-@media (min-width: 616px) {
+@media (min-width: 401px) {
+  html {
+    --base-font-size: 17px;
+    --base-line-height: 28px;
+  }
+}
+@media (min-width: 558px) {
   html {
     --base-font-size: 19px;
     --base-line-height: 30px;
   }
 }
-@media (min-width: 863px) {
+@media (min-width: 744px) {
   html {
     --base-font-size: 21px;
+    --base-line-height: 32px;
+  }
+}
+@media (min-width: 1002px) {
+  html {
+    --base-font-size: 22px;
     --base-line-height: 34px;
   }
 }
-@media (min-width: 1232px) {
+@media (min-width: 1402px) {
   html {
     --base-font-size: 23px;
     --base-line-height: 36px;
@@ -40,19 +52,29 @@ article {
   padding: calc(1 * var(--base-unit)) calc(0.8 * var(--base-unit) * 1.1) calc(1 * var(--base-unit)) calc(1 * var(--base-unit) * 1.1);
   transition: padding 0.3s cubic-bezier(0.65, 0.05, 0.36, 1);
 }
-@media (min-width: 616px) {
+@media (min-width: 401px) {
   article {
     padding: calc(2 * var(--base-unit)) calc(1.6 * var(--base-unit) * 1.1) calc(2 * var(--base-unit)) calc(2 * var(--base-unit) * 1.1);
   }
 }
-@media (min-width: 863px) {
+@media (min-width: 558px) {
   article {
     padding: calc(3 * var(--base-unit)) calc(2.4 * var(--base-unit) * 1.1) calc(3 * var(--base-unit)) calc(3 * var(--base-unit) * 1.1);
   }
 }
-@media (min-width: 1232px) {
+@media (min-width: 744px) {
   article {
     padding: calc(4 * var(--base-unit)) calc(3.2 * var(--base-unit) * 1.1) calc(4 * var(--base-unit)) calc(4 * var(--base-unit) * 1.1);
+  }
+}
+@media (min-width: 1002px) {
+  article {
+    padding: calc(5 * var(--base-unit)) calc(4 * var(--base-unit) * 1.1) calc(5 * var(--base-unit)) calc(5 * var(--base-unit) * 1.1);
+  }
+}
+@media (min-width: 1402px) {
+  article {
+    padding: calc(8 * var(--base-unit)) calc(6.4 * var(--base-unit) * 1.1) calc(8 * var(--base-unit)) calc(8 * var(--base-unit) * 1.1);
   }
 }
 article > section {
@@ -73,27 +95,43 @@ h1, h2, p {
 }
 
 h1 {
-  font-size: 54px;
-  --line-height: calc(var(--base-unit) * 4);
+  font-size: 35px;
+  --line-height: calc(var(--base-unit) * 3);
   line-height: var(--line-height);
 }
-@media (min-width: 616px) {
+@media (min-width: 401px) {
   h1 {
-    font-size: 61px;
+    font-size: 38px;
+    --base-unit: 14px;
+    --line-height: calc(var(--base-unit) * 3);
+    line-height: var(--line-height);
+  }
+}
+@media (min-width: 558px) {
+  h1 {
+    font-size: 60px;
     --base-unit: 15px;
+    --line-height: calc(var(--base-unit) * 4);
+    line-height: var(--line-height);
+  }
+}
+@media (min-width: 744px) {
+  h1 {
+    font-size: 65px;
+    --base-unit: 16px;
     --line-height: calc(var(--base-unit) * 5);
     line-height: var(--line-height);
   }
 }
-@media (min-width: 863px) {
+@media (min-width: 1002px) {
   h1 {
-    font-size: 69px;
+    font-size: 70px;
     --base-unit: 17px;
     --line-height: calc(var(--base-unit) * 5);
     line-height: var(--line-height);
   }
 }
-@media (min-width: 1232px) {
+@media (min-width: 1402px) {
   h1 {
     font-size: 73px;
     --base-unit: 18px;
@@ -110,29 +148,45 @@ h1:after {
 }
 
 h2 {
-  font-size: 36px;
+  font-size: 30px;
   --line-height: calc(var(--base-unit) * 3);
   line-height: var(--line-height);
 }
-@media (min-width: 616px) {
+@media (min-width: 401px) {
   h2 {
-    font-size: 40px;
+    font-size: 34px;
+    --base-unit: 14px;
+    --line-height: calc(var(--base-unit) * 3);
+    line-height: var(--line-height);
+  }
+}
+@media (min-width: 558px) {
+  h2 {
+    font-size: 42px;
     --base-unit: 15px;
     --line-height: calc(var(--base-unit) * 3);
     line-height: var(--line-height);
   }
 }
-@media (min-width: 863px) {
+@media (min-width: 744px) {
   h2 {
-    font-size: 46px;
+    font-size: 44px;
+    --base-unit: 16px;
+    --line-height: calc(var(--base-unit) * 3);
+    line-height: var(--line-height);
+  }
+}
+@media (min-width: 1002px) {
+  h2 {
+    font-size: 48px;
     --base-unit: 17px;
     --line-height: calc(var(--base-unit) * 3);
     line-height: var(--line-height);
   }
 }
-@media (min-width: 1232px) {
+@media (min-width: 1402px) {
   h2 {
-    font-size: 50px;
+    font-size: 52px;
     --base-unit: 18px;
     --line-height: calc(var(--base-unit) * 3);
     line-height: var(--line-height);
@@ -154,85 +208,128 @@ p:after {
   vertical-align: calc(var(--base-line-height) * -1);
 }
 
-section p:nth-of-type(1):before, section p:nth-of-type(1):after {
+section p:nth-of-type(1):before, section p:nth-of-type(1):after, section figcaption:nth-of-type(1):before, section figcaption:nth-of-type(1):after {
   height: var(--base-line-height);
   content: "";
 }
-section p:nth-of-type(1):after {
+section p:nth-of-type(1):after, section figcaption:nth-of-type(1):after {
   vertical-align: calc(var(--base-line-height) * -1);
 }
-section p:nth-of-type(2) {
+section p:nth-of-type(2), section figcaption:nth-of-type(2) {
   font-size: 23px;
   --line-height: calc(var(--base-unit) * 2);
   line-height: var(--line-height);
 }
-section p:nth-of-type(2):before, section p:nth-of-type(2):after {
+section p:nth-of-type(2):before, section p:nth-of-type(2):after, section figcaption:nth-of-type(2):before, section figcaption:nth-of-type(2):after {
   height: var(--line-height);
   content: "";
 }
-section p:nth-of-type(2):after {
+section p:nth-of-type(2):after, section figcaption:nth-of-type(2):after {
   vertical-align: calc(var(--line-height) * -1);
 }
-@media (min-width: 616px) {
-  section p:nth-of-type(2) {
+@media (min-width: 401px) {
+  section p:nth-of-type(2), section figcaption:nth-of-type(2) {
+    font-size: 23px;
+    --base-unit: 14px;
+    --line-height: calc(var(--base-unit) * 2);
+    line-height: var(--line-height);
+  }
+}
+@media (min-width: 558px) {
+  section p:nth-of-type(2), section figcaption:nth-of-type(2) {
     font-size: 23px;
     --base-unit: 15px;
     --line-height: calc(var(--base-unit) * 2);
     line-height: var(--line-height);
   }
 }
-@media (min-width: 863px) {
-  section p:nth-of-type(2) {
+@media (min-width: 744px) {
+  section p:nth-of-type(2), section figcaption:nth-of-type(2) {
+    font-size: 23px;
+    --base-unit: 16px;
+    --line-height: calc(var(--base-unit) * 2);
+    line-height: var(--line-height);
+  }
+}
+@media (min-width: 1002px) {
+  section p:nth-of-type(2), section figcaption:nth-of-type(2) {
     font-size: 23px;
     --base-unit: 17px;
     --line-height: calc(var(--base-unit) * 2);
     line-height: var(--line-height);
   }
 }
-@media (min-width: 1232px) {
-  section p:nth-of-type(2) {
+@media (min-width: 1402px) {
+  section p:nth-of-type(2), section figcaption:nth-of-type(2) {
     font-size: 23px;
     --base-unit: 18px;
     --line-height: calc(var(--base-unit) * 2);
     line-height: var(--line-height);
   }
 }
-section p:nth-of-type(3) {
+section p:nth-of-type(3), section figcaption:nth-of-type(3) {
   font-size: 11px;
   --line-height: calc(var(--base-unit) * 1);
   line-height: var(--line-height);
   padding-top: calc(1 * var(--base-unit));
 }
-section p:nth-of-type(3):before, section p:nth-of-type(3):after {
+section p:nth-of-type(3):before, section p:nth-of-type(3):after, section figcaption:nth-of-type(3):before, section figcaption:nth-of-type(3):after {
   height: var(--line-height);
   content: "";
 }
-section p:nth-of-type(3):after {
+section p:nth-of-type(3):after, section figcaption:nth-of-type(3):after {
   vertical-align: calc(var(--line-height) * -1);
 }
-@media (min-width: 616px) {
-  section p:nth-of-type(3) {
+@media (min-width: 401px) {
+  section p:nth-of-type(3), section figcaption:nth-of-type(3) {
+    font-size: 11px;
+    --base-unit: 14px;
+    --line-height: calc(var(--base-unit) * 1);
+    line-height: var(--line-height);
+  }
+}
+@media (min-width: 558px) {
+  section p:nth-of-type(3), section figcaption:nth-of-type(3) {
     font-size: 11px;
     --base-unit: 15px;
     --line-height: calc(var(--base-unit) * 1);
     line-height: var(--line-height);
   }
 }
-@media (min-width: 863px) {
-  section p:nth-of-type(3) {
+@media (min-width: 744px) {
+  section p:nth-of-type(3), section figcaption:nth-of-type(3) {
+    font-size: 11px;
+    --base-unit: 16px;
+    --line-height: calc(var(--base-unit) * 1);
+    line-height: var(--line-height);
+  }
+}
+@media (min-width: 1002px) {
+  section p:nth-of-type(3), section figcaption:nth-of-type(3) {
     font-size: 11px;
     --base-unit: 17px;
     --line-height: calc(var(--base-unit) * 1);
     line-height: var(--line-height);
   }
 }
-@media (min-width: 1232px) {
-  section p:nth-of-type(3) {
+@media (min-width: 1402px) {
+  section p:nth-of-type(3), section figcaption:nth-of-type(3) {
     font-size: 11px;
     --base-unit: 18px;
     --line-height: calc(var(--base-unit) * 1);
     line-height: var(--line-height);
   }
+}
+
+figure {
+  margin: 0;
+  padding-top: calc(1 * var(--base-unit));
+}
+figure img {
+  width: 100%;
+  object-fit: cover;
+  height: calc(20 * var(--base-unit));
+  display: block;
 }
 
 #gridblock {
