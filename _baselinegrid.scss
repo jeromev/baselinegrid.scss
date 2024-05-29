@@ -13,37 +13,37 @@ $scale: (
   'xs': (
     'font-size': 16px,
     'line-height': 26px, // works best in Chrome if this is an integer divisible by 2
-    'min-width': 0, // grid-units
+    'min-width': 0, // pixels
     'pad': 1 // grid-units
   ),
   's': (
     'font-size': 17px,
     'line-height': 28px, // works best in Chrome if this is an integer divisible by 2
-    'min-width': 28, // grid-units
+    'min-width': 375px, // pixels
     'pad': 2 // grid-units
   ),
   'm': (
     'font-size': 19px,
     'line-height': 30px, // // works best in Chrome if this is an integer divisible by 2
-    'min-width': 39, // grid-units
+    'min-width': 600px, // pixels
     'pad': 3 // grid-units
   ),
   'l': (
     'font-size': 21px,
     'line-height': 32px, // // works best in Chrome if this is an integer divisible by 2
-    'min-width': 52, // grid-units
+    'min-width': 800px, // pixels
     'pad': 4 // grid-units
   ),
   'xl': (
     'font-size': 22px,
     'line-height': 34px, // // works best in Chrome if this is an integer divisible by 2
-    'min-width': 70, // grid-units
+    'min-width': 1024px, // pixels
     'pad': 5 // grid-units
   ),
   'xxl': (
     'font-size': 23px,
     'line-height': 36px, // // works best in Chrome if this is an integer divisible by 2
-    'min-width': 98, // grid-units
+    'min-width': 1600px, // pixels
     'pad': 8 // grid-units
   )
 ) !default;
@@ -205,7 +205,7 @@ $_vertical-align: (
   @include pad(getFromScale('xs','pad'));
   @each $size, $props in $scale {
     @if (map.get($props, 'min-width') > 0) {
-      @media (min-width: h(map.get($props, 'min-width'), 1)) {
+      @media (min-width: map.get($props, 'min-width')) {
         @include pad(getFromScale($size, 'pad'));
       }
     }
@@ -215,7 +215,7 @@ $_vertical-align: (
   @include padh(getFromScale('xs','pad'));
   @each $size, $props in $scale {
     @if (map.get($props, 'min-width') > 0) {
-      @media (min-width: h(map.get($props, 'min-width'), 1)) {
+      @media (min-width: map.get($props, 'min-width')) {
         @include padh(getFromScale($size, 'pad'));
       }
     }
@@ -241,7 +241,7 @@ $_vertical-align: (
   --base-line-height: #{getFromScale('xs','line-height')};
   @each $size, $props in $scale {
     @if (map.get($props, 'min-width') > 0) {
-      @media (min-width: h(map.get($props, 'min-width'), 1)) {
+      @media (min-width: map.get($props, 'min-width')) {
         $font-size: getFromScale($size, 'font-size');
         $line-height: getFromScale($size, 'line-height');
         --base-font-size: #{$font-size};
@@ -301,7 +301,7 @@ $_vertical-align: (
     }
     @each $size, $props in $scale {
       @if (map.get($props, 'min-width') > 0) {
-        @media (min-width: h(map.get($props, 'min-width'), 1)) {
+        @media (min-width: map.get($props, 'min-width')) {
           $base-font-size: getFromScale($size, 'font-size');
           font-size: $font-size;
           $base-unit: math.div(getFromScale($size, 'line-height'), $_base-scale);
@@ -330,7 +330,7 @@ $_vertical-align: (
     @if ($prop == 'font-size') {
       @each $size, $font-size in $scale {
         @if (getFromScale($size, 'min-width') > 0) {
-          @media (min-width: h(getFromScale($size, 'min-width'), 1)) {
+          @media (min-width: getFromScale($size, 'min-width')) {
             font-size: $font-size;
             $base-unit: math.div(getFromScale($size, 'line-height'), $_base-scale);
             --base-unit: #{$base-unit};
@@ -356,7 +356,7 @@ $_vertical-align: (
     } @else {
       @each $size, $value in $scale {
         @if (getFromScale($size, 'min-width') > 0) {
-          @media (min-width: h(getFromScale($size, 'min-width'), 1)) {
+          @media (min-width: getFromScale($size, 'min-width')) {
             #{$prop}: $value;
           }
         } @else {
