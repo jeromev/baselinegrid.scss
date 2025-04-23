@@ -232,12 +232,15 @@ $_vertical-align: $_distance-bottom - $_distance-top;
       }
     }
   }
-  --base-unit: calc(var(--base-line-height) / #{$_base-scale});
-  font-size: var(--base-font-size);
-  line-height: var(--base-line-height);
-  @if ($debug == 1) {
-    @include show-grid();
+  & {
+    --base-unit: calc(var(--base-line-height) / #{$_base-scale});
+    font-size: var(--base-font-size);
+    line-height: var(--base-line-height);
+    @if ($debug == 1) {
+      @include show-grid();
+    }
   }
+  
 }
 
 // Show the baseline grid as a background image (for debugging)

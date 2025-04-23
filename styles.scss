@@ -12,7 +12,6 @@ html {
 }
 
 article {
-  @include bg.pad-scale();
   transition: padding .3s cubic-bezier(.65,.05,.36,1);
   > section {
     display: grid;
@@ -20,6 +19,7 @@ article {
     column-gap: bg.h();
     padding: bg.v() 0;
   }
+  @include bg.pad-scale();
 }
 
 h1, h2 {
@@ -66,8 +66,8 @@ section {
       @include bg.set(23px);
     }
     &:nth-of-type(3) {
-      @include bg.set(11px);
       padding-top: bg.v();
+      @include bg.set(11px);
     }
   }
 }
@@ -86,8 +86,8 @@ figure {
 #gridblock {
   position: fixed;
   top: 0;
+  background-color: red;
   left: bg.h();
   width: bg.h();
   height: bg.v();
-  background-color: red;
 }
