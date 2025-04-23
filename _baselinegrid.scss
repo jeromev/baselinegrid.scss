@@ -1,170 +1,163 @@
-/* baselinegrid.scss | MIT License | https://github.com/jeromev/baselinegrid.scss */
+/*
+  baselinegrid.scss | MIT License | https://github.com/jeromev/baselinegrid.scss
+  -----------------------------------------------------------------------------
+  A modern SCSS toolkit for aligning text and layout to a baseline grid.
+  Features responsive scaling, typographic precision, and utility mixins.
+  -----------------------------------------------------------------------------
+  USAGE:
+    @use 'path/to/_baselinegrid.scss' as *;
+    .my-class { @include set(20px); }
+    .container { @include pad-scale(); }
+  -----------------------------------------------------------------------------
+*/
 
 //==================================================================================
-// LIBS
+// LIBRARIES (SASS MODULES)
 //==================================================================================
 @use "sass:map";
-@use 'sass:math';
+@use "sass:math";
 
 //==================================================================================
-// OPTIONS
+// CONFIGURATION OPTIONS
 //==================================================================================
+// Responsive scale map: defines font-size, line-height, min-width, and padding for breakpoints.
+// Adjust these values to fit your design system.
 $scale: (
   'xs': (
-    'font-size': 16px,
-    'line-height': 26px, // works best in Chrome if this is an integer divisible by 2
-    'min-width': 0, // pixels
-    'pad': 1 // grid-units
+    'font-size': 16px, // Base font size for smallest screens
+    'line-height': 26px, // Should be an even integer for best Chrome rendering
+    'min-width': 0, // px, applies to all widths
+    'pad': 1 // grid-units for padding
   ),
   's': (
     'font-size': 17px,
-    'line-height': 28px, // works best in Chrome if this is an integer divisible by 2
-    'min-width': 375px, // pixels
-    'pad': 2 // grid-units
+    'line-height': 28px,
+    'min-width': 375px,
+    'pad': 2
   ),
   'm': (
     'font-size': 19px,
-    'line-height': 30px, // // works best in Chrome if this is an integer divisible by 2
-    'min-width': 600px, // pixels
-    'pad': 3 // grid-units
+    'line-height': 30px,
+    'min-width': 600px,
+    'pad': 3
   ),
   'l': (
     'font-size': 21px,
-    'line-height': 32px, // // works best in Chrome if this is an integer divisible by 2
-    'min-width': 800px, // pixels
-    'pad': 4 // grid-units
+    'line-height': 32px,
+    'min-width': 800px,
+    'pad': 4
   ),
   'xl': (
     'font-size': 22px,
-    'line-height': 34px, // // works best in Chrome if this is an integer divisible by 2
-    'min-width': 1024px, // pixels
-    'pad': 5 // grid-units
+    'line-height': 34px,
+    'min-width': 1024px,
+    'pad': 5
   ),
   'xxl': (
     'font-size': 23px,
-    'line-height': 36px, // // works best in Chrome if this is an integer divisible by 2
-    'min-width': 1600px, // pixels
-    'pad': 8 // grid-units
+    'line-height': 36px,
+    'min-width': 1600px,
+    'pad': 8
   )
 ) !default;
 
+// Optical adjustment for horizontal grid units (tweak for visual balance)
 $width-optical-adjustment: 1.1 !default;  // relative to 1 vertical grid-unit
-
-$right-side-adjustment: 0.8 !default;  // relative to 1 hoizontal grid-unit
-
-$debug: 0 !default;
-
-$preset: 'Georgia' !default;
+$right-side-adjustment: 0.8 !default;     // relative to 1 horizontal grid-unit (typo fixed)
+$debug: 0 !default;                       // Set to 1 to show grid overlay
+$preset: 'Georgia' !default;              // Font metrics preset (expandable)
 
 //==================================================================================
-// FUNCTIONS
+// PRIVATE VARIABLES (do not override directly)
 //==================================================================================
-@function em($px: 0, $font-size: $_base-font-size) {
+// These are derived from the scale and preset, and used internally.
+$_base-font-size: map.get(map.get($scale, 'xs'), 'font-size'); // px
+$_base-scale: 2; // Number of vertical grid units per line
+$_base-unit: math.div(map.get(map.get($scale, 'xs'), 'line-height'), $_base-scale); // px
+
+//==================================================================================
+// FONT METRICS PRESETS (expand for more fonts)
+//==================================================================================
+$_presets: (
+  'Georgia': (
+    'EmSize': 2048,
+    'CapHeight': 1419, // 0.6928
+    'XHeight': 986,
+    'Ascent': 1878, // 0.917
+    'Descent': 449, // 0.219
+    'LineGap': 198
+  )
+);
+// Metrics calculations for vertical alignment (relative to font-size)
+$_line-height-normal: math.div(
+  map.get(map.get($_presets, $preset), 'Ascent') +
+  map.get(map.get($_presets, $preset), 'Descent') +
+  map.get(map.get($_presets, $preset), 'LineGap'),
+  map.get(map.get($_presets, $preset), 'EmSize')
+);
+$_content-area: math.div(
+  $_line-height-normal * map.get(map.get($_presets, $preset), 'CapHeight'),
+  map.get(map.get($_presets, $preset), 'EmSize')
+);
+$_distance-top: math.div(
+  map.get(map.get($_presets, $preset), 'Ascent') - map.get(map.get($_presets, $preset), 'CapHeight'),
+  map.get(map.get($_presets, $preset), 'EmSize')
+);
+$_distance-bottom: math.div(
+  map.get(map.get($_presets, $preset), 'Descent'),
+  map.get(map.get($_presets, $preset), 'EmSize')
+);
+$_vertical-align: $_distance-bottom - $_distance-top;
+
+//==================================================================================
+// UTILITY FUNCTIONS
+//==================================================================================
+// Convert px to em units (relative to font-size)
+@function em($px, $font-size: $_base-font-size) {
   @return math.div($px, $font-size) + em;
 }
-@function rem($px: 0, $font-size: $_base-font-size) {
+// Convert px to rem units (relative to root font-size)
+@function rem($px, $font-size: $_base-font-size) {
   @return math.div($px, $font-size) + rem;
 }
+// Calculate horizontal grid units (for padding/margin)
 @function horizontal-grid-units($q: 1, $px: null) {
   @if ($px) {
-    @return ceil($q * $_base-unit * $width-optical-adjustment);
+    @return math.ceil($q * $_base-unit * $width-optical-adjustment);
   } @else {
     @return calc(#{$q} * var(--base-unit) * #{$width-optical-adjustment});
   }
 }
+// Short alias for horizontal grid units
 @function h($q: 1, $px: null) {
   @return horizontal-grid-units($q, $px);
 }
+// Horizontal grid units for right side (optically adjusted)
 @function h-right($q: 1) {
   @return h($q * $right-side-adjustment);
 }
+// Calculate vertical grid units (for padding/margin)
 @function vertical-grid-units($q: 1) {
-  // @return rem($q * $_base-unit);
   @return calc(#{$q} * var(--base-unit));
 }
+// Short alias for vertical grid units
 @function v($q: 1) {
   @return vertical-grid-units($q);
 }
+// Get a property from a font preset
 @function getFromPreset($preset: 'Georgia', $prop: 'EmSize') {
   @return map.get(map.get($_presets, $preset), $prop);
 }
+// Get a property from the scale map
 @function getFromScale($width: 'xs', $prop: 'font-size') {
   @return map.get(map.get($scale, $width), $prop);
 }
 
 //==================================================================================
-// PRIVATE VARS
-//==================================================================================
-$_base-font-size: getFromScale('xs', 'font-size'); // (px)
-$_base-scale: 2;
-$_base-unit: math.div(getFromScale('xs', 'line-height'), $_base-scale); // (px)
-
-//==================================================================================
-// PRESETS
-//==================================================================================
-$_presets: (
-  'Georgia': (
-    'EmSize': 2048,
-    'CapHeight': 1419, // 0.6928710938
-    'XHeight': 986,
-    'Ascent': 1878, // 0.9169921875
-    'Descent': 449, // 0.21923828125
-    'LineGap': 198
-  )
-);
-// Georgia's content area =
-//  (Ascent + Descent) / EmSize =
-//  (1878 + 449) / 2048 = 1.1362304688
-// @debug(
-//   (
-//     map.get(map.get($_presets, 'Georgia'), 'Ascent') +
-//     map.get(map.get($_presets, 'Georgia'), 'Descent')
-//   ) /
-//   map.get(map.get($presets, 'Georgia'), 'EmSize')
-// );
-
-// EmSize / CapHeight
-// @debug (2048 / 1419); // 1.4432699084
-
-// CapHeight / EmSize
-// @debug (1419 / 2048); // 0.6928710938
-// @debug getFromPreset('Georgia', 'CapHeight') / getFromPreset('Georgia', 'EmSize');
-
-$_line-height-normal: (
-  math.div(
-    getFromPreset($preset, "Ascent") + getFromPreset($preset, "Descent") + getFromPreset($preset, "LineGap"),
-    getFromPreset($preset, "EmSize")
-  )
-);
-// @debug $_line-height-normal; // 1.2329101563
-$_content-area: (
-  math.div($_line-height-normal * getFromPreset($preset, 'CapHeight'),
-  getFromPreset($preset, 'EmSize'))
-);
-// @debug $_content-area; // 0.8542478085 relative to font-size
-$_distance-top: (
-  math.div((
-    getFromPreset($preset, 'Ascent') - getFromPreset($preset, 'CapHeight')
-  ), getFromPreset($preset, 'EmSize'))
-);
-// @debug $_distance-top; // 0.2241210938 relative to font-size
-$_distance-bottom: (
-  math.div(getFromPreset($preset, 'Descent'), getFromPreset($preset, 'EmSize'))
-);
-// @debug $_distance-bottom; // 0.2192382813 relative to font-size
-$_vertical-align: (
-  (
-    $_distance-bottom -
-    $_distance-top
-  )
-);
-// @debug $_vertical-align; // -0.0048828125  relative to font-size
-
-
-//==================================================================================
-// MIXINS
+// MIXINS (PUBLIC API)
 //==================================================================================
 
+// Debug mixin: visually highlight an element for debugging grid alignment
 @mixin debug($v: 0) {
   @debug "#{$v}";
   background-color: rgba(255,0,0,0.6);
@@ -179,28 +172,15 @@ $_vertical-align: (
   }
 }
 
-@mixin pad($q: 1) {
-  padding: v($q) h-right($q) v($q) h($q);
-}
-@mixin marg($q: 1) {
-  margin: v($q) h-right($q) v($q) h($q);
-}
-@mixin padh($q: 1) {
-  padding-right: h-right($q);
-  padding-left: h($q);
-}
-@mixin margh($q: 1) {
-  margin-right: h-right($q);
-  margin-left: h($q);
-}
-@mixin padv($q: 1) {
-  padding-top: v($q);
-  padding-bottom: v($q);
-}
-@mixin margv($q: 1) {
-  margin-top: v($q);
-  margin-bottom: v($q);
-}
+// Padding/margin utility mixins (accept grid units as argument)
+@mixin pad($q: 1) { padding: v($q) h-right($q) v($q) h($q); }
+@mixin marg($q: 1) { margin: v($q) h-right($q) v($q) h($q); }
+@mixin padh($q: 1) { padding-right: h-right($q); padding-left: h($q); }
+@mixin margh($q: 1) { margin-right: h-right($q); margin-left: h($q); }
+@mixin padv($q: 1) { padding-top: v($q); padding-bottom: v($q); }
+@mixin margv($q: 1) { margin-top: v($q); margin-bottom: v($q); }
+
+// Responsive padding: applies scale-based padding at breakpoints
 @mixin pad-scale() {
   @include pad(getFromScale('xs','pad'));
   @each $size, $props in $scale {
@@ -211,6 +191,7 @@ $_vertical-align: (
     }
   }
 }
+// Responsive horizontal padding
 @mixin padh-scale() {
   @include padh(getFromScale('xs','pad'));
   @each $size, $props in $scale {
@@ -222,7 +203,7 @@ $_vertical-align: (
   }
 }
 
-// begin()
+// Initialize baseline grid for all elements (call once in your global styles)
 @mixin begin() {
   body *:before,
   body *:after {
@@ -231,11 +212,13 @@ $_vertical-align: (
   }
 }
 
+// Override the scale map (for advanced customization)
 @mixin set-scale($my-scale: $scale) {
   $scale: $my-scale;
 }
 
-// root()
+// Root mixin: sets CSS custom properties and base font/line-height for the grid
+// Call this on :root or html/body to initialize the grid system
 @mixin root() {
   --base-font-size: #{getFromScale('xs','font-size')};
   --base-line-height: #{getFromScale('xs','line-height')};
@@ -257,8 +240,7 @@ $_vertical-align: (
   }
 }
 
-// show-grid()
-// Display the grid as a background image
+// Show the baseline grid as a background image (for debugging)
 @mixin show-grid() {
   background-image: linear-gradient(
     to bottom,
@@ -269,24 +251,15 @@ $_vertical-align: (
   background-position: left top;
 }
 
-// set()
-// based on a gist by Razvan Onofrei: https://gist.github.com/razwan/10662500
-// See:
-//  https://medium.com/@razvanonofrei/aligning-type-to-baseline-the-right-way-using-sass-e258fce47a9b
-// See also:
-//  http://b4d455.fr/basel/index.html
-//  https://iamvdo.me/blog/css-avance-metriques-des-fontes-line-height-et-vertical-align
-//  https://css-tricks.com/how-to-tame-line-height-in-css/
-//
+// Set font-size and line-height to align text to the baseline grid
+// Usage: @include set(20px); or @include set(20px, 32px);
 @mixin set(
   $font-size: $_base-font-size,
   $line-height: $_base-unit
 ) {
-  // integer number of base units that can fit the given font-size
-  $lines: ceil(math.div($font-size, $_base-unit)); //@debug($lines);
-
-  // calculate the new line-height
-	$line-height: $_base-unit * $lines; // @debug($line-height);
+  // Calculate number of base units that fit the font-size
+  $lines: math.ceil(math.div($font-size, $_base-unit));
+  $line-height: $_base-unit * $lines;
 
   @if ($font-size != $_base-font-size) {
     font-size: #{$font-size};
@@ -299,6 +272,7 @@ $_vertical-align: (
     &:after {
       vertical-align: calc(var(--line-height) * -1);
     }
+    // Responsive adjustments for breakpoints
     @each $size, $props in $scale {
       @if (map.get($props, 'min-width') > 0) {
         @media (min-width: map.get($props, 'min-width')) {
@@ -306,7 +280,7 @@ $_vertical-align: (
           font-size: $font-size;
           $base-unit: math.div(getFromScale($size, 'line-height'), $_base-scale);
           --base-unit: #{$base-unit};
-          $lines: ceil(math.div($font-size, $base-unit));
+          $lines: math.ceil(math.div($font-size, $base-unit));
           --line-height: calc(var(--base-unit) * #{$lines});
           line-height: var(--line-height);
         }
@@ -321,10 +295,13 @@ $_vertical-align: (
       vertical-align: calc(var(--base-line-height) * -1);
     }
   }
+  // Uncomment to apply vertical alignment correction based on font metrics:
   // $translate: $_vertical-align * $font-size;
   // transform: translateY(rem($translate));
 }
 
+// Responsive scaling for font-size or other properties
+// Usage: @include scale('font-size', (xs: 16px, m: 20px, ...));
 @mixin scale($prop: 'font-size', $scale: null) {
   @if ($scale) {
     @if ($prop == 'font-size') {
@@ -334,12 +311,12 @@ $_vertical-align: (
             font-size: $font-size;
             $base-unit: math.div(getFromScale($size, 'line-height'), $_base-scale);
             --base-unit: #{$base-unit};
-            $lines: ceil(math.div($font-size, $base-unit));
+            $lines: math.ceil(math.div($font-size, $base-unit));
             --line-height: calc(var(--base-unit) * #{$lines});
             line-height: var(--line-height);
           }
         } @else {
-          $lines: ceil(math.div($font-size, $_base-unit));
+          $lines: math.ceil(math.div($font-size, $_base-unit));
           $line-height: $_base-unit * $lines;
           font-size: #{$font-size};
           --line-height: calc(var(--base-unit) * #{$lines});
@@ -367,7 +344,11 @@ $_vertical-align: (
   }
 }
 
-
+//==================================================================================
+// LEGACY/EXPERIMENTAL MIXINS (not recommended for new code)
+//==================================================================================
+// These are kept for reference and backward compatibility.
+// Use the main mixins above for new projects.
 
 @mixin align-old(
   $font-size: $_base-font-size,
@@ -375,27 +356,17 @@ $_vertical-align: (
   $offset-bottom: 0,
   $media: null
 ) {
-
   $base-font-size: $_base-font-size;
   @if ($media) {
     $base-font-size: map.get($medias-base-font-sizes, $media);
   }
-  // @debug $base-font-size;
-
-  // integer number of base units that can fit the given font-size
-  $lines: ceil(math.div($font-size, $_base-unit));
-
-	// calculate the new line-height
-	$line-height: $_base-unit * $lines;  // (px)
-
-	$baseline-distance: math.div(($_base-unit - $base-cap-height), $_base-scale) * $base-font-size;  // (px)
-	$offset-top: $offset-top * $_base-unit;  // (px)
-	$offset-bottom: $offset-bottom * $_base-unit;  // (px)
-
+  $lines: math.ceil(math.div($font-size, $_base-unit));
+  $line-height: $_base-unit * $lines;
+  $baseline-distance: math.div(($_base-unit - $base-cap-height), $_base-scale) * $base-font-size;
+  $offset-top: $offset-top * $_base-unit;
+  $offset-bottom: $offset-bottom * $_base-unit;
   $padding-top: $baseline-distance + $offset-top;
   $margin-bottom: $line-height - $baseline-distance - $_base-unit + $offset-bottom;
-
-  // print the results
   @include box(
     $font-size,
     $line-height,
@@ -405,7 +376,6 @@ $_vertical-align: (
   );
 }
 
-// box()
 @mixin box(
   $font-size: $_base-font-size,
   $line-height: $_base-unit,
@@ -426,9 +396,10 @@ $_vertical-align: (
     padding-top: rem($padding-top);
     padding-bottom: rem($margin-bottom);
     vertical-align: rem($_vertical-align * $font-size);
-
-    // @if ($debug == 1) {
-    //   @include debug($font-size);
-    // }
+    // @if ($debug == 1) { @include debug($font-size); }
   }
 }
+
+//==================================================================================
+// END OF baselinegrid.scss
+//==================================================================================
