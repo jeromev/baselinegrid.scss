@@ -8,6 +8,7 @@
     @use 'path/to/_baselinegrid.scss' as *;
     .my-class { @include set(20px); }
     .container { @include pad-scale(); }
+    .element { @include respond-to('m') { font-size: 20px; } }
   -----------------------------------------------------------------------------
 */
 
@@ -20,52 +21,108 @@
 //==================================================================================
 // CONFIGURATION OPTIONS
 //==================================================================================
+
 // Responsive scale map: defines font-size, line-height, min-width, and padding for breakpoints.
-// Adjust these values to fit your design system.
+// This is the primary configuration - adjust these values to fit your design system.
 $scale: (
   'xs': (
-    'font-size': 16px, // Base font size for smallest screens
-    'line-height': 26px, // Should be an even integer for best Chrome rendering
-    'min-width': 0, // px, applies to all widths
-    'pad': 1 // grid-units for padding
+    'font-size': 16px,    // Base font size for smallest screens
+    'line-height': 26px,  // Should be an even integer for best Chrome rendering
+    'min-width': 0,       // Base/mobile-first (no media query)
+    'pad': 1              // grid-units for padding
   ),
   's': (
     'font-size': 17px,
     'line-height': 28px,
-    'min-width': 375px,
+    'min-width': 375px,   // Small phones
     'pad': 2
   ),
   'm': (
     'font-size': 19px,
     'line-height': 30px,
-    'min-width': 600px,
+    'min-width': 600px,   // Tablets
     'pad': 3
   ),
   'l': (
     'font-size': 21px,
     'line-height': 32px,
-    'min-width': 800px,
+    'min-width': 800px,   // Desktop
     'pad': 4
   ),
   'xl': (
     'font-size': 22px,
     'line-height': 34px,
-    'min-width': 1024px,
+    'min-width': 1024px,  // Large desktop
     'pad': 5
   ),
   'xxl': (
     'font-size': 23px,
     'line-height': 36px,
-    'min-width': 1600px,
+    'min-width': 1600px,  // Extra large desktop
     'pad': 8
   )
 ) !default;
+
+// Breakpoint system derived from $scale - used for respond-to() mixin
+// This automatically stays in sync with your scale configuration
+$breakpoints: (
+  'xs': map.get(map.get($scale, 'xs'), 'min-width'),
+  's': map.get(map.get($scale, 's'), 'min-width'),
+  'm': map.get(map.get($scale, 'm'), 'min-width'),
+  'l': map.get(map.get($scale, 'l'), 'min-width'),
+  'xl': map.get(map.get($scale, 'xl'), 'min-width'),
+  'xxl': map.get(map.get($scale, 'xxl'), 'min-width')
+) !default;
+
+// Responsive scale map: defines font-size, line-height, min-width, and padding for breakpoints.
+// This is the primary configuration - adjust these values to fit your design system.
 
 // Optical adjustment for horizontal grid units (tweak for visual balance)
 $width-optical-adjustment: 1.1 !default;  // relative to 1 vertical grid-unit
 $right-side-adjustment: 0.8 !default;     // relative to 1 horizontal grid-unit (typo fixed)
 $debug: 0 !default;                       // Set to 1 to show grid overlay
 $preset: 'Georgia' !default;              // Font metrics preset (expandable)
+
+//==================================================================================
+// RESPONSIVE BREAKPOINT MIXIN
+//==================================================================================
+
+/// Responsive breakpoint mixin for consistent media queries across your project
+/// @param {String} $breakpoint - The breakpoint name from $breakpoints
+/// @example scss - Usage
+///   .element {
+///     font-size: 16px;
+///     @include respond-to('m') {
+///       font-size: 20px;
+///     }
+///   }
+@mixin respond-to($breakpoint) {
+  @if map.has-key($breakpoints, $breakpoint) {
+    $value: map.get($breakpoints, $breakpoint);
+    @if $value == 0 {
+      @content; // No media query for base/xs breakpoint
+    } @else {
+      @media (min-width: $value) {
+        @content;
+      }
+    }
+  } @else {
+    @error "Breakpoint '#{$breakpoint}' not found in $breakpoints. Available breakpoints: #{map.keys($breakpoints)}";
+  }
+}
+
+/// Get a breakpoint value from the $breakpoints map (derived from $scale)
+/// @param {String} $breakpoint - The breakpoint name
+/// @return {Number} The breakpoint value in pixels
+/// @example scss - Usage
+///   $tablet-width: breakpoint('m'); // Returns 600px
+@function breakpoint($breakpoint) {
+  @if map.has-key($breakpoints, $breakpoint) {
+    @return map.get($breakpoints, $breakpoint);
+  } @else {
+    @error "Breakpoint '#{$breakpoint}' not found in $breakpoints. Available breakpoints: #{map.keys($breakpoints)}";
+  }
+}
 
 //==================================================================================
 // PRIVATE VARIABLES (do not override directly)
@@ -185,7 +242,7 @@ $_vertical-align: $_distance-bottom - $_distance-top;
   @include pad(getFromScale('xs','pad'));
   @each $size, $props in $scale {
     @if (map.get($props, 'min-width') > 0) {
-      @media (min-width: map.get($props, 'min-width')) {
+      @include respond-to($size) {
         @include pad(getFromScale($size, 'pad'));
       }
     }
@@ -196,7 +253,7 @@ $_vertical-align: $_distance-bottom - $_distance-top;
   @include padh(getFromScale('xs','pad'));
   @each $size, $props in $scale {
     @if (map.get($props, 'min-width') > 0) {
-      @media (min-width: map.get($props, 'min-width')) {
+      @include respond-to($size) {
         @include padh(getFromScale($size, 'pad'));
       }
     }
@@ -224,7 +281,7 @@ $_vertical-align: $_distance-bottom - $_distance-top;
   --base-line-height: #{getFromScale('xs','line-height')};
   @each $size, $props in $scale {
     @if (map.get($props, 'min-width') > 0) {
-      @media (min-width: map.get($props, 'min-width')) {
+      @include respond-to($size) {
         $font-size: getFromScale($size, 'font-size');
         $line-height: getFromScale($size, 'line-height');
         --base-font-size: #{$font-size};
@@ -240,7 +297,6 @@ $_vertical-align: $_distance-bottom - $_distance-top;
       @include show-grid();
     }
   }
-  
 }
 
 // Show the baseline grid as a background image (for debugging)
@@ -278,7 +334,7 @@ $_vertical-align: $_distance-bottom - $_distance-top;
     // Responsive adjustments for breakpoints
     @each $size, $props in $scale {
       @if (map.get($props, 'min-width') > 0) {
-        @media (min-width: map.get($props, 'min-width')) {
+        @include respond-to($size) {
           $base-font-size: getFromScale($size, 'font-size');
           font-size: $font-size;
           $base-unit: math.div(getFromScale($size, 'line-height'), $_base-scale);
@@ -310,7 +366,7 @@ $_vertical-align: $_distance-bottom - $_distance-top;
     @if ($prop == 'font-size') {
       @each $size, $font-size in $scale {
         @if (getFromScale($size, 'min-width') > 0) {
-          @media (min-width: getFromScale($size, 'min-width')) {
+          @include respond-to($size) {
             font-size: $font-size;
             $base-unit: math.div(getFromScale($size, 'line-height'), $_base-scale);
             --base-unit: #{$base-unit};
@@ -336,7 +392,7 @@ $_vertical-align: $_distance-bottom - $_distance-top;
     } @else {
       @each $size, $value in $scale {
         @if (getFromScale($size, 'min-width') > 0) {
-          @media (min-width: getFromScale($size, 'min-width')) {
+          @include respond-to($size) {
             #{$prop}: $value;
           }
         } @else {
