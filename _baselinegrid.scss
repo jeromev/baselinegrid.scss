@@ -26,40 +26,46 @@
 // This is the primary configuration - adjust these values to fit your design system.
 $scale: (
   'xs': (
-    'font-size': 16px,    // Base font size for smallest screens
-    'line-height': 26px,  // Should be an even integer for best Chrome rendering
+    'font-size': 15px,    // Base font size for smallest screens
+    'line-height': 24px,  // Should be an even integer for best Chrome rendering
     'min-width': 0,       // Base/mobile-first (no media query)
     'pad': 1              // grid-units for padding
   ),
   's': (
     'font-size': 17px,
-    'line-height': 28px,
+    'line-height': 26px,
     'min-width': 375px,   // Small phones
     'pad': 2
   ),
   'm': (
     'font-size': 19px,
-    'line-height': 30px,
-    'min-width': 600px,   // Tablets
+    'line-height': 28px,
+    'min-width': 560px,   // Tablets
     'pad': 3
   ),
   'l': (
-    'font-size': 21px,
-    'line-height': 32px,
-    'min-width': 800px,   // Desktop
+    'font-size': 20px,
+    'line-height': 30px,
+    'min-width': 768px,   // Desktop
     'pad': 4
   ),
   'xl': (
-    'font-size': 22px,
-    'line-height': 34px,
+    'font-size': 21px,
+    'line-height': 32px,
     'min-width': 1024px,  // Large desktop
     'pad': 5
   ),
   'xxl': (
     'font-size': 23px,
-    'line-height': 36px,
-    'min-width': 1600px,  // Extra large desktop
+    'line-height': 34px,
+    'min-width': 1440px,  // Extra large desktop
     'pad': 8
+  ),
+  'ul': (
+    'font-size': 25px,
+    'line-height': 36px,
+    'min-width': 2004px,  // Ultra large desktop
+    'pad': 10
   )
 ) !default;
 
@@ -71,7 +77,8 @@ $breakpoints: (
   'm': map.get(map.get($scale, 'm'), 'min-width'),
   'l': map.get(map.get($scale, 'l'), 'min-width'),
   'xl': map.get(map.get($scale, 'xl'), 'min-width'),
-  'xxl': map.get(map.get($scale, 'xxl'), 'min-width')
+  'xxl': map.get(map.get($scale, 'xxl'), 'min-width'),
+  'ul': map.get(map.get($scale, 'ul'), 'min-width')
 ) !default;
 
 // Optical adjustment for horizontal grid units (tweak for visual balance)
