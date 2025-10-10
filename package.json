@@ -1,7 +1,7 @@
 {
   "name": "baselinegrid.scss",
   "description": "A small set of SCSS tools to align text to a baseline grid.",
-  "version": "2.1.1",
+  "version": "2.1.2",
   "author": {
     "name": "Jérôme Vogel",
     "email": "jerome.vogel@gmail.com"
