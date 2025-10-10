@@ -74,9 +74,6 @@ $breakpoints: (
   'xxl': map.get(map.get($scale, 'xxl'), 'min-width')
 ) !default;
 
-// Responsive scale map: defines font-size, line-height, min-width, and padding for breakpoints.
-// This is the primary configuration - adjust these values to fit your design system.
-
 // Optical adjustment for horizontal grid units (tweak for visual balance)
 $width-optical-adjustment: 1.1 !default;  // relative to 1 vertical grid-unit
 $right-side-adjustment: 0.8 !default;     // relative to 1 horizontal grid-unit (typo fixed)
