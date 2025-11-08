@@ -9,6 +9,7 @@
     @use 'path/to/_baselinegrid.scss' as *;
     .my-class { @include set(20px); }
     .container { @include pad-scale(); }
+    .element { @include respond-to('m') { font-size: 20px; } }
   -----------------------------------------------------------------------------
 */
 body *:before,
@@ -19,36 +20,42 @@ body *:after {
 
 html {
   font-family: Georgia, serif;
-  --base-font-size: 16px;
-  --base-line-height: 26px;
+  --base-font-size: 15px;
+  --base-line-height: 24px;
 }
 @media (min-width: 375px) {
   html {
     --base-font-size: 17px;
+    --base-line-height: 26px;
+  }
+}
+@media (min-width: 560px) {
+  html {
+    --base-font-size: 19px;
     --base-line-height: 28px;
   }
 }
-@media (min-width: 600px) {
+@media (min-width: 768px) {
   html {
-    --base-font-size: 19px;
+    --base-font-size: 20px;
     --base-line-height: 30px;
   }
 }
-@media (min-width: 800px) {
+@media (min-width: 1024px) {
   html {
     --base-font-size: 21px;
     --base-line-height: 32px;
   }
 }
-@media (min-width: 1024px) {
+@media (min-width: 1440px) {
   html {
-    --base-font-size: 22px;
+    --base-font-size: 23px;
     --base-line-height: 34px;
   }
 }
-@media (min-width: 1600px) {
+@media (min-width: 2004px) {
   html {
-    --base-font-size: 23px;
+    --base-font-size: 25px;
     --base-line-height: 36px;
   }
 }
@@ -63,7 +70,6 @@ html {
 
 article {
   transition: padding 0.3s cubic-bezier(0.65, 0.05, 0.36, 1);
-  padding: calc(1 * var(--base-unit)) calc(0.8 * var(--base-unit) * 1.1) calc(1 * var(--base-unit)) calc(1 * var(--base-unit) * 1.1);
 }
 article > section {
   display: grid;
@@ -71,17 +77,20 @@ article > section {
   column-gap: calc(1 * var(--base-unit) * 1.1);
   padding: calc(1 * var(--base-unit)) 0;
 }
+article {
+  padding: calc(1 * var(--base-unit)) calc(0.8 * var(--base-unit) * 1.1) calc(1 * var(--base-unit)) calc(1 * var(--base-unit) * 1.1);
+}
 @media (min-width: 375px) {
   article {
     padding: calc(2 * var(--base-unit)) calc(1.6 * var(--base-unit) * 1.1) calc(2 * var(--base-unit)) calc(2 * var(--base-unit) * 1.1);
   }
 }
-@media (min-width: 600px) {
+@media (min-width: 560px) {
   article {
     padding: calc(3 * var(--base-unit)) calc(2.4 * var(--base-unit) * 1.1) calc(3 * var(--base-unit)) calc(3 * var(--base-unit) * 1.1);
   }
 }
-@media (min-width: 800px) {
+@media (min-width: 768px) {
   article {
     padding: calc(4 * var(--base-unit)) calc(3.2 * var(--base-unit) * 1.1) calc(4 * var(--base-unit)) calc(4 * var(--base-unit) * 1.1);
   }
@@ -91,9 +100,14 @@ article > section {
     padding: calc(5 * var(--base-unit)) calc(4 * var(--base-unit) * 1.1) calc(5 * var(--base-unit)) calc(5 * var(--base-unit) * 1.1);
   }
 }
-@media (min-width: 1600px) {
+@media (min-width: 1440px) {
   article {
     padding: calc(8 * var(--base-unit)) calc(6.4 * var(--base-unit) * 1.1) calc(8 * var(--base-unit)) calc(8 * var(--base-unit) * 1.1);
+  }
+}
+@media (min-width: 2004px) {
+  article {
+    padding: calc(10 * var(--base-unit)) calc(8 * var(--base-unit) * 1.1) calc(10 * var(--base-unit)) calc(10 * var(--base-unit) * 1.1);
   }
 }
 
@@ -115,23 +129,23 @@ h1 {
 @media (min-width: 375px) {
   h1 {
     font-size: 38px;
-    --base-unit: 14px;
+    --base-unit: 13px;
     --line-height: calc(var(--base-unit) * 3);
     line-height: var(--line-height);
   }
 }
-@media (min-width: 600px) {
+@media (min-width: 560px) {
   h1 {
     font-size: 60px;
-    --base-unit: 15px;
-    --line-height: calc(var(--base-unit) * 4);
+    --base-unit: 14px;
+    --line-height: calc(var(--base-unit) * 5);
     line-height: var(--line-height);
   }
 }
-@media (min-width: 800px) {
+@media (min-width: 768px) {
   h1 {
     font-size: 65px;
-    --base-unit: 16px;
+    --base-unit: 15px;
     --line-height: calc(var(--base-unit) * 5);
     line-height: var(--line-height);
   }
@@ -139,14 +153,22 @@ h1 {
 @media (min-width: 1024px) {
   h1 {
     font-size: 70px;
+    --base-unit: 16px;
+    --line-height: calc(var(--base-unit) * 5);
+    line-height: var(--line-height);
+  }
+}
+@media (min-width: 1440px) {
+  h1 {
+    font-size: 73px;
     --base-unit: 17px;
     --line-height: calc(var(--base-unit) * 5);
     line-height: var(--line-height);
   }
 }
-@media (min-width: 1600px) {
+@media (min-width: 2004px) {
   h1 {
-    font-size: 73px;
+    font-size: 75px;
     --base-unit: 18px;
     --line-height: calc(var(--base-unit) * 5);
     line-height: var(--line-height);
@@ -168,23 +190,23 @@ h2 {
 @media (min-width: 375px) {
   h2 {
     font-size: 34px;
+    --base-unit: 13px;
+    --line-height: calc(var(--base-unit) * 3);
+    line-height: var(--line-height);
+  }
+}
+@media (min-width: 560px) {
+  h2 {
+    font-size: 42px;
     --base-unit: 14px;
     --line-height: calc(var(--base-unit) * 3);
     line-height: var(--line-height);
   }
 }
-@media (min-width: 600px) {
-  h2 {
-    font-size: 42px;
-    --base-unit: 15px;
-    --line-height: calc(var(--base-unit) * 3);
-    line-height: var(--line-height);
-  }
-}
-@media (min-width: 800px) {
+@media (min-width: 768px) {
   h2 {
     font-size: 44px;
-    --base-unit: 16px;
+    --base-unit: 15px;
     --line-height: calc(var(--base-unit) * 3);
     line-height: var(--line-height);
   }
@@ -192,16 +214,24 @@ h2 {
 @media (min-width: 1024px) {
   h2 {
     font-size: 48px;
-    --base-unit: 17px;
+    --base-unit: 16px;
     --line-height: calc(var(--base-unit) * 3);
     line-height: var(--line-height);
   }
 }
-@media (min-width: 1600px) {
+@media (min-width: 1440px) {
   h2 {
     font-size: 52px;
+    --base-unit: 17px;
+    --line-height: calc(var(--base-unit) * 4);
+    line-height: var(--line-height);
+  }
+}
+@media (min-width: 2004px) {
+  h2 {
+    font-size: 55px;
     --base-unit: 18px;
-    --line-height: calc(var(--base-unit) * 3);
+    --line-height: calc(var(--base-unit) * 4);
     line-height: var(--line-height);
   }
 }
@@ -243,12 +273,20 @@ section p:nth-of-type(2):after, section figcaption:nth-of-type(2):after {
 @media (min-width: 375px) {
   section p:nth-of-type(2), section figcaption:nth-of-type(2) {
     font-size: 23px;
+    --base-unit: 13px;
+    --line-height: calc(var(--base-unit) * 2);
+    line-height: var(--line-height);
+  }
+}
+@media (min-width: 560px) {
+  section p:nth-of-type(2), section figcaption:nth-of-type(2) {
+    font-size: 23px;
     --base-unit: 14px;
     --line-height: calc(var(--base-unit) * 2);
     line-height: var(--line-height);
   }
 }
-@media (min-width: 600px) {
+@media (min-width: 768px) {
   section p:nth-of-type(2), section figcaption:nth-of-type(2) {
     font-size: 23px;
     --base-unit: 15px;
@@ -256,7 +294,7 @@ section p:nth-of-type(2):after, section figcaption:nth-of-type(2):after {
     line-height: var(--line-height);
   }
 }
-@media (min-width: 800px) {
+@media (min-width: 1024px) {
   section p:nth-of-type(2), section figcaption:nth-of-type(2) {
     font-size: 23px;
     --base-unit: 16px;
@@ -264,7 +302,7 @@ section p:nth-of-type(2):after, section figcaption:nth-of-type(2):after {
     line-height: var(--line-height);
   }
 }
-@media (min-width: 1024px) {
+@media (min-width: 1440px) {
   section p:nth-of-type(2), section figcaption:nth-of-type(2) {
     font-size: 23px;
     --base-unit: 17px;
@@ -272,7 +310,7 @@ section p:nth-of-type(2):after, section figcaption:nth-of-type(2):after {
     line-height: var(--line-height);
   }
 }
-@media (min-width: 1600px) {
+@media (min-width: 2004px) {
   section p:nth-of-type(2), section figcaption:nth-of-type(2) {
     font-size: 23px;
     --base-unit: 18px;
@@ -296,12 +334,20 @@ section p:nth-of-type(3):after, section figcaption:nth-of-type(3):after {
 @media (min-width: 375px) {
   section p:nth-of-type(3), section figcaption:nth-of-type(3) {
     font-size: 11px;
+    --base-unit: 13px;
+    --line-height: calc(var(--base-unit) * 1);
+    line-height: var(--line-height);
+  }
+}
+@media (min-width: 560px) {
+  section p:nth-of-type(3), section figcaption:nth-of-type(3) {
+    font-size: 11px;
     --base-unit: 14px;
     --line-height: calc(var(--base-unit) * 1);
     line-height: var(--line-height);
   }
 }
-@media (min-width: 600px) {
+@media (min-width: 768px) {
   section p:nth-of-type(3), section figcaption:nth-of-type(3) {
     font-size: 11px;
     --base-unit: 15px;
@@ -309,7 +355,7 @@ section p:nth-of-type(3):after, section figcaption:nth-of-type(3):after {
     line-height: var(--line-height);
   }
 }
-@media (min-width: 800px) {
+@media (min-width: 1024px) {
   section p:nth-of-type(3), section figcaption:nth-of-type(3) {
     font-size: 11px;
     --base-unit: 16px;
@@ -317,7 +363,7 @@ section p:nth-of-type(3):after, section figcaption:nth-of-type(3):after {
     line-height: var(--line-height);
   }
 }
-@media (min-width: 1024px) {
+@media (min-width: 1440px) {
   section p:nth-of-type(3), section figcaption:nth-of-type(3) {
     font-size: 11px;
     --base-unit: 17px;
@@ -325,7 +371,7 @@ section p:nth-of-type(3):after, section figcaption:nth-of-type(3):after {
     line-height: var(--line-height);
   }
 }
-@media (min-width: 1600px) {
+@media (min-width: 2004px) {
   section p:nth-of-type(3), section figcaption:nth-of-type(3) {
     font-size: 11px;
     --base-unit: 18px;

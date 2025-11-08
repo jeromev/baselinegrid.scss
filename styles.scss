@@ -5,7 +5,6 @@
 @import url(node_modules/sanitize.css/sanitize.css);
 
 @include bg.begin();
-
 html {
   font-family: Georgia, serif;
   @include bg.root();
