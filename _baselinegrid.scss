@@ -11,12 +11,17 @@
     .element { @include respond-to('m') { font-size: 20px; } }
   -----------------------------------------------------------------------------
 */
+//==================================================================================
+// VERSION
+//==================================================================================
+$version: '2.2.0' !default;
 
 //==================================================================================
 // LIBRARIES (SASS MODULES)
 //==================================================================================
 @use "sass:map";
 @use "sass:math";
+@use "sass:meta";
 
 //==================================================================================
 // CONFIGURATION OPTIONS
@@ -88,15 +93,72 @@ $debug: 0 !default;                       // Set to 1 to show grid overlay
 $preset: 'Georgia' !default;              // Font metrics preset (expandable)
 
 //==================================================================================
+// CONFIGURATION VALIDATION
+//==================================================================================
+
+/// Validate scale configuration at compile time
+/// Ensures all required breakpoints and properties are present
+@mixin _validate-scale() {
+  $required-breakpoints: ('xs', 's', 'm', 'l', 'xl', 'xxl', 'ul');
+  $required-props: ('font-size', 'line-height', 'min-width', 'pad');
+  
+  // Check all required breakpoints exist
+  @each $bp in $required-breakpoints {
+    @if not map.has-key($scale, $bp) {
+      @error 'baselinegrid.scss: Scale missing required breakpoint "#{$bp}". Required breakpoints: #{$required-breakpoints}';
+    }
+    
+    $bp-config: map.get($scale, $bp);
+    
+    // Check all required properties exist for this breakpoint
+    @each $prop in $required-props {
+      @if not map.has-key($bp-config, $prop) {
+        @error 'baselinegrid.scss: Breakpoint "#{$bp}" missing required property "#{$prop}". Required properties: #{$required-props}';
+      }
+    }
+    
+    // Validate line-height is even integer (for better rendering)
+    $lh: map.get($bp-config, 'line-height');
+    @if meta.type-of($lh) == 'number' and math.unit($lh) == 'px' {
+      $lh-unitless: math.div($lh, 1px);
+      @if $lh-unitless % 2 != 0 {
+        @warn 'baselinegrid.scss: Breakpoint "#{$bp}" has odd line-height (#{$lh}). Even integers (e.g., 24px, 26px, 28px) are recommended for better browser rendering.';
+      }
+    }
+    
+    // Validate min-width is 0 for 'xs' breakpoint
+    @if $bp == 'xs' {
+      $min-width: map.get($bp-config, 'min-width');
+      @if $min-width != 0 {
+        @error 'baselinegrid.scss: First breakpoint "xs" must have min-width: 0, got: #{$min-width}';
+      }
+    }
+  }
+  
+  // Validate optical adjustment is in reasonable range
+  @if $width-optical-adjustment < 0.5 or $width-optical-adjustment > 2 {
+    @warn 'baselinegrid.scss: width-optical-adjustment (#{$width-optical-adjustment}) is outside typical range (0.5-2.0). This may cause unexpected horizontal spacing.';
+  }
+  
+  // Warn if debug mode is enabled
+  @if $debug == 1 {
+    @warn 'baselinegrid.scss: Debug mode is ENABLED. Grid overlay will be visible. Set $debug: 0 before deploying to production.';
+  }
+}
+
+// Run validation immediately when module is configured
+@include _validate-scale();
+
+//==================================================================================
 // RESPONSIVE BREAKPOINT MIXIN
 //==================================================================================
 
-/// Responsive breakpoint mixin for consistent media queries across your project
-/// @param {String} $breakpoint - The breakpoint name from $breakpoints
-/// @example scss - Usage
+/// Generate media query for a specific breakpoint
+/// @param {String} $breakpoint - Breakpoint name
+/// @example scss - Media query
 ///   .element {
 ///     font-size: 16px;
-///     @include respond-to('m') {
+///     @include bg.respond-to('m') {
 ///       font-size: 20px;
 ///     }
 ///   }
@@ -209,9 +271,67 @@ $_vertical-align: $_distance-bottom - $_distance-top;
 @function getFromPreset($preset: 'Georgia', $prop: 'EmSize') {
   @return map.get(map.get($_presets, $preset), $prop);
 }
-// Get a property from the scale map
-@function getFromScale($width: 'xs', $prop: 'font-size') {
-  @return map.get(map.get($scale, $width), $prop);
+/// Get a specific property value from a breakpoint in the scale
+/// @param {String} $breakpoint - Breakpoint name ('xs', 's', 'm', 'l', 'xl', 'xxl', 'ul')
+/// @param {String} $property - Property name ('font-size', 'line-height', 'min-width', 'pad')
+/// @return {*} Property value from scale configuration
+/// @throws Error if breakpoint or property doesn't exist
+/// @example scss - Get font size
+///   $xs-size: bg.getFromScale('xs', 'font-size');  // 15px
+///   $l-line: bg.getFromScale('l', 'line-height');   // 30px
+@function getFromScale($breakpoint, $property) {
+  @if not map.has-key($scale, $breakpoint) {
+    @error 'baselinegrid.scss: Breakpoint "#{$breakpoint}" not found in scale. Available breakpoints: #{map.keys($scale)}';
+  }
+  
+  $bp-config: map.get($scale, $breakpoint);
+  
+  @if not map.has-key($bp-config, $property) {
+    @error 'baselinegrid.scss: Property "#{$property}" not found in breakpoint "#{$breakpoint}". Available properties: #{map.keys($bp-config)}';
+  }
+  
+  @return map.get($bp-config, $property);
+}
+
+//==================================================================================
+// CONFIGURATION QUERY FUNCTION
+//==================================================================================
+
+/// Get current baselinegrid configuration
+/// Useful for debugging and verifying configuration
+/// @return {Map} Configuration map with scale, settings, and computed values
+/// @example scss - Get configuration
+///   $config: bg.get-config();
+///   @debug $config;
+@function get-config() {
+  @return (
+    'scale': $scale,
+    'breakpoints': map.keys($scale),
+    'width-optical-adjustment': $width-optical-adjustment,
+    'debug': $debug,
+    'preset': $preset,
+    'version': '2.2.0'
+  );
+}
+
+/// Get all breakpoint names from scale
+/// @return {List} List of breakpoint names
+/// @example scss - Get breakpoints
+///   $breakpoints: bg.get-breakpoints();
+///   // Returns: ('xs', 's', 'm', 'l', 'xl', 'xxl', 'ul')
+@function get-breakpoints() {
+  @return map.keys($scale);
+}
+
+/// Check if a breakpoint exists in scale
+/// @param {String} $breakpoint - Breakpoint name to check
+/// @return {Boolean} True if breakpoint exists
+/// @example scss - Check breakpoint
+///   @if bg.has-breakpoint('xl') {
+///     // Safe to use 'xl'
+///   }
+@function has-breakpoint($breakpoint) {
+  @return map.has-key($scale, $breakpoint);
 }
 
 //==================================================================================
@@ -264,7 +384,11 @@ $_vertical-align: $_distance-bottom - $_distance-top;
   }
 }
 
-// Initialize baseline grid for all elements (call once in your global styles)
+/// Initialize baseline grid system (call once in global styles)
+/// Sets vertical-align: baseline on pseudo-elements for consistent alignment
+/// @example scss - Initialize
+///   @use 'baselinegrid.scss/baselinegrid' as bg;
+///   @include bg.begin();
 @mixin begin() {
   body *:before,
   body *:after {
@@ -278,8 +402,12 @@ $_vertical-align: $_distance-bottom - $_distance-top;
   $scale: $my-scale;
 }
 
-// Root mixin: sets CSS custom properties and base font/line-height for the grid
-// Call this on :root or html/body to initialize the grid system
+/// Apply baseline grid to root element (html or body)
+/// Sets CSS custom properties and base font/line-height
+/// @example scss - Apply to root
+///   html {
+///     @include bg.root();
+///   }
 @mixin root() {
   --base-font-size: #{getFromScale('xs','font-size')};
   --base-line-height: #{getFromScale('xs','line-height')};
@@ -314,8 +442,13 @@ $_vertical-align: $_distance-bottom - $_distance-top;
   background-position: left top;
 }
 
-// Set font-size and line-height to align text to the baseline grid
-// Usage: @include set(20px); or @include set(20px, 32px);
+/// Set baseline-aligned font-size and line-height on element
+/// @param {Number} $size [null] - Optional font size (uses scale default if null)
+/// @param {Number} $line-height [null] - Optional line height (uses scale default if null)
+/// @example scss - Apply baseline
+///   p, li {
+///     @include bg.set();
+///   }
 @mixin set(
   $font-size: $_base-font-size,
   $line-height: $_base-unit
@@ -363,8 +496,15 @@ $_vertical-align: $_distance-bottom - $_distance-top;
   // transform: translateY(rem($translate));
 }
 
-// Responsive scaling for font-size or other properties
-// Usage: @include scale('font-size', (xs: 16px, m: 20px, ...));
+/// Apply responsive values to a CSS property across breakpoints
+/// @param {String} $property - CSS property name (e.g., 'font-size', 'padding')
+/// @param {Map} $value-map - Map of breakpoint → value pairs
+/// @example scss - Responsive padding
+///   @include bg.scale('padding', (
+///     'xs': bg.v(2),
+///     'm': bg.v(3),
+///     'xl': bg.v(4)
+///   ));
 @mixin scale($prop: 'font-size', $scale: null) {
   @if ($scale) {
     @if ($prop == 'font-size') {

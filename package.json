@@ -1,7 +1,17 @@
 {
   "name": "baselinegrid.scss",
-  "description": "A small set of SCSS tools to align text to a baseline grid.",
-  "version": "2.1.2",
+  "description": "A modern SCSS toolkit for aligning text and layout to a baseline grid with configuration validation and responsive utilities.",
+  "version": "2.2.0",
+  "keywords": [
+    "sass",
+    "scss",
+    "baseline",
+    "grid",
+    "typography",
+    "responsive",
+    "design-system",
+    "vertical-rhythm"
+  ],
   "author": {
     "name": "Jérôme Vogel",
     "email": "jerome.vogel@gmail.com"
