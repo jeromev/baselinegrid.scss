@@ -14,7 +14,7 @@
 //==================================================================================
 // VERSION
 //==================================================================================
-$version: '2.2.0' !default;
+$version: '3.0.0' !default;
 
 //==================================================================================
 // LIBRARIES (SASS MODULES)
@@ -87,10 +87,10 @@ $breakpoints: (
 ) !default;
 
 // Optical adjustment for horizontal grid units (tweak for visual balance)
-$width-optical-adjustment: 1.1 !default;  // relative to 1 vertical grid-unit
-$right-side-adjustment: 0.8 !default;     // relative to 1 horizontal grid-unit (typo fixed)
-$debug: 0 !default;                       // Set to 1 to show grid overlay
-$preset: 'Georgia' !default;              // Font metrics preset (expandable)
+$width-optical-adjustment: 1.1 !default;        // relative to 1 vertical grid-unit
+$right-side-optical-adjustment: .8 !default;     // relative to 1 horizontal grid-unit (set to 1 for symmetric padding)
+$debug: 0 !default;                             // Set to 1 to show grid overlay
+$preset: 'Georgia' !default;                    // Font metrics preset (expandable)
 
 //==================================================================================
 // CONFIGURATION VALIDATION
@@ -143,6 +143,29 @@ $preset: 'Georgia' !default;              // Font metrics preset (expandable)
   // Warn if debug mode is enabled
   @if $debug == 1 {
     @warn 'baselinegrid.scss: Debug mode is ENABLED. Grid overlay will be visible. Set $debug: 0 before deploying to production.';
+  }
+  
+  // NEW: Validate scale progression (breakpoints in ascending order)
+  $prev-width: -1;
+  @each $bp in $required-breakpoints {
+    $min-width: map.get(map.get($scale, $bp), 'min-width');
+    @if $min-width < $prev-width {
+      @error 'baselinegrid.scss: Breakpoint "#{$bp}" has min-width (#{$min-width}) less than previous breakpoint (#{$prev-width}). Breakpoints must be in ascending order.';
+    }
+    $prev-width: $min-width;
+  }
+  
+  // NEW: Validate line-height progression (should generally increase)
+  $prev-lh: 0;
+  @each $bp in $required-breakpoints {
+    $lh: map.get(map.get($scale, $bp), 'line-height');
+    @if meta.type-of($lh) == 'number' and math.unit($lh) == 'px' {
+      $lh-val: math.div($lh, 1px);
+      @if $lh-val < $prev-lh {
+        @warn 'baselinegrid.scss: Breakpoint "#{$bp}" has line-height (#{$lh}) less than previous breakpoint (#{$prev-lh}px). Consider increasing line-heights at larger breakpoints for better readability.';
+      }
+      $prev-lh: $lh-val;
+    }
   }
 }
 
@@ -248,7 +271,7 @@ $_vertical-align: $_distance-bottom - $_distance-top;
   @if ($px) {
     @return math.ceil($q * $_base-unit * $width-optical-adjustment);
   } @else {
-    @return calc(#{$q} * var(--base-unit) * #{$width-optical-adjustment});
+    @return calc(#{$q} * var(--base-unit) * var(--width-optical-adjustment));
   }
 }
 // Short alias for horizontal grid units
@@ -256,8 +279,12 @@ $_vertical-align: $_distance-bottom - $_distance-top;
   @return horizontal-grid-units($q, $px);
 }
 // Horizontal grid units for right side (optically adjusted)
-@function h-right($q: 1) {
-  @return h($q * $right-side-adjustment);
+@function h-right($q: 1, $px: null) {
+  @if ($px) {
+    @return math.ceil($q * $_base-unit * $width-optical-adjustment * $right-side-optical-adjustment);
+  } @else {
+    @return calc(#{$q} * var(--base-unit) * var(--width-optical-adjustment) * var(--right-side-optical-adjustment));
+  }
 }
 // Calculate vertical grid units (for padding/margin)
 @function vertical-grid-units($q: 1) {
@@ -310,7 +337,7 @@ $_vertical-align: $_distance-bottom - $_distance-top;
     'width-optical-adjustment': $width-optical-adjustment,
     'debug': $debug,
     'preset': $preset,
-    'version': '2.2.0'
+    'version': '3.0.0'
   );
 }
 
@@ -332,6 +359,133 @@ $_vertical-align: $_distance-bottom - $_distance-top;
 ///   }
 @function has-breakpoint($breakpoint) {
   @return map.has-key($scale, $breakpoint);
+}
+
+//==================================================================================
+// ENHANCED UTILITY FUNCTIONS (v3.0.0)
+//==================================================================================
+
+/// Clamp vertical spacing between min and max using grid units
+/// @param {Number} $value - Preferred value multiplier
+/// @param {Number} $min - Minimum value multiplier
+/// @param {Number} $max - Maximum value multiplier
+/// @return {String} CSS clamp() expression with responsive values
+/// @example scss - Fluid padding with limits
+///   padding: bg.v-clamp(2, 1, 3);  // Between 1-3 units, preferring 2
+@function v-clamp($value: 1, $min: 0.5, $max: 2) {
+  @return clamp(v($min), v($value), v($max));
+}
+
+/// Clamp horizontal spacing between min and max using grid units
+/// @param {Number} $value - Preferred value multiplier
+/// @param {Number} $min - Minimum value multiplier
+/// @param {Number} $max - Maximum value multiplier
+/// @return {String} CSS clamp() expression with responsive values
+/// @example scss - Fluid width with limits
+///   width: bg.h-clamp(20, 15, 30);  // Between 15-30 units, preferring 20
+@function h-clamp($value: 1, $min: 0.5, $max: 2) {
+  @return clamp(h($min), h($value), h($max));
+}
+
+/// Fluid vertical spacing between two breakpoints using viewport width
+/// @param {String} $start-bp - Starting breakpoint name
+/// @param {String} $end-bp - Ending breakpoint name
+/// @param {Number} $start-value - Starting value multiplier
+/// @param {Number} $end-value - Ending value multiplier
+/// @return {String} CSS clamp() with fluid calculation
+/// @example scss - Smooth scaling between breakpoints
+///   padding: bg.v-fluid('s', 'xl', 2, 4);  // Grows from 2 to 4 units
+@function v-fluid($start-bp, $end-bp, $start-value, $end-value) {
+  $start-width: getFromScale($start-bp, 'min-width');
+  $end-width: getFromScale($end-bp, 'min-width');
+  $start-lh: getFromScale($start-bp, 'line-height');
+  $end-lh: getFromScale($end-bp, 'line-height');
+  $start-unit: math.div($start-lh, $_base-scale);
+  $end-unit: math.div($end-lh, $_base-scale);
+  
+  $start-px: $start-unit * $start-value;
+  $end-px: $end-unit * $end-value;
+  $slope: math.div($end-px - $start-px, $end-width - $start-width);
+  $intercept: $start-px - ($slope * $start-width);
+  
+  @return clamp(
+    #{$start-px}px,
+    calc(#{$intercept}px + #{$slope * 100}vw),
+    #{$end-px}px
+  );
+}
+
+/// Fluid horizontal spacing between two breakpoints
+/// @param {String} $start-bp - Starting breakpoint name
+/// @param {String} $end-bp - Ending breakpoint name
+/// @param {Number} $start-value - Starting value multiplier
+/// @param {Number} $end-value - Ending value multiplier
+/// @return {String} CSS clamp() with fluid calculation
+/// @example scss
+///   width: bg.h-fluid('m', 'xxl', 10, 20);
+@function h-fluid($start-bp, $end-bp, $start-value, $end-value) {
+  $start-width: getFromScale($start-bp, 'min-width');
+  $end-width: getFromScale($end-bp, 'min-width');
+  $start-lh: getFromScale($start-bp, 'line-height');
+  $end-lh: getFromScale($end-bp, 'line-height');
+  $start-unit: math.div($start-lh, $_base-scale) * $width-optical-adjustment;
+  $end-unit: math.div($end-lh, $_base-scale) * $width-optical-adjustment;
+  
+  $start-px: $start-unit * $start-value;
+  $end-px: $end-unit * $end-value;
+  $slope: math.div($end-px - $start-px, $end-width - $start-width);
+  $intercept: $start-px - ($slope * $start-width);
+  
+  @return clamp(
+    #{$start-px}px,
+    calc(#{$intercept}px + #{$slope * 100}vw),
+    #{$end-px}px
+  );
+}
+
+/// Zero-value shortcut for vertical spacing (explicit for clarity)
+/// @return {Number} Zero value
+/// @example scss
+///   margin-top: bg.v0();  // More explicit than 0
+@function v0() { @return 0; }
+
+/// Zero-value shortcut for horizontal spacing (explicit for clarity)
+/// @return {Number} Zero value
+/// @example scss
+///   padding-left: bg.h0();  // More explicit than 0
+@function h0() { @return 0; }
+
+/// Pre-calculate static vertical grid value (compile-time optimization)
+/// Use when value doesn't need to be responsive at runtime
+/// @param {Number} $multiplier - Grid unit multiplier
+/// @param {String} $breakpoint - Breakpoint to calculate for (default: 'xs')
+/// @return {Number} Static px value
+/// @example scss - Static value for non-responsive component
+///   $icon-size: bg.v-static(2);  // Returns 48px at 'xs'
+@function v-static($multiplier: 1, $breakpoint: 'xs') {
+  $line-height: getFromScale($breakpoint, 'line-height');
+  @return math.div($line-height, $_base-scale) * $multiplier;
+}
+
+/// Pre-calculate static horizontal grid value (compile-time optimization)
+/// @param {Number} $multiplier - Grid unit multiplier
+/// @param {String} $breakpoint - Breakpoint to calculate for (default: 'xs')
+/// @return {Number} Static px value
+/// @example scss
+///   $column-width: bg.h-static(11);  // Returns static px value
+@function h-static($multiplier: 1, $breakpoint: 'xs') {
+  $line-height: getFromScale($breakpoint, 'line-height');
+  $base-unit: math.div($line-height, $_base-scale);
+  @return $base-unit * $width-optical-adjustment * $multiplier;
+}
+
+/// Check if value is effectively zero (helper for conditionals)
+/// @param {*} $value - Value to check
+/// @return {Boolean} True if value is zero
+/// @example scss
+///   @if not bg.is-zero($margin) { margin: $margin; }
+@function is-zero($value) {
+  @return $value == 0 or $value == 0px or $value == '0' or $value == 0em or $value == 0rem;
 }
 
 //==================================================================================
@@ -384,6 +538,143 @@ $_vertical-align: $_distance-bottom - $_distance-top;
   }
 }
 
+//==================================================================================
+// ENHANCED SPACING MIXINS (v3.0.0)
+//==================================================================================
+
+/// Common spacing pattern with vertical and horizontal grid units
+/// @param {Number} $v-size - Vertical spacing multiplier
+/// @param {Number} $h-size - Horizontal spacing multiplier (defaults to $v-size if null)
+/// @example scss - Equal spacing
+///   @include bg.spacing(2);  // 2 units vertical and horizontal
+/// @example scss - Different spacing
+///   @include bg.spacing(3, 2);  // 3 vertical, 2 horizontal
+@mixin spacing($v-size: 1, $h-size: null) {
+  $h: if($h-size, $h-size, $v-size);
+  padding: v($v-size) h($h);
+}
+
+/// Symmetric spacing (same on all sides) - shorthand for common pattern
+/// @param {Number} $size - Spacing multiplier for all sides
+/// @example scss
+///   @include bg.spacing-symmetric(2);  // 2 units on all sides
+@mixin spacing-symmetric($size: 1) {
+  padding: v($size) h($size);
+}
+
+/// Asymmetric spacing with individual control for each side
+/// @param {Number} $top - Top spacing multiplier
+/// @param {Number} $right - Right spacing multiplier
+/// @param {Number} $bottom - Bottom spacing multiplier
+/// @param {Number} $left - Left spacing multiplier
+/// @example scss
+///   @include bg.spacing-custom(2, 1, 3, 1);
+@mixin spacing-custom($top: 0, $right: 0, $bottom: 0, $left: 0) {
+  padding: v($top) h($right) v($bottom) h($left);
+}
+
+/// Stack spacing for vertically stacked elements (auto removes last-child margin)
+/// @param {Number} $size - Spacing multiplier
+/// @example scss
+///   .cards { @include bg.spacing-stack(2); }  // 2 units between cards
+@mixin spacing-stack($size: 1) {
+  margin-bottom: v($size);
+  
+  &:last-child {
+    margin-bottom: 0;
+  }
+}
+
+/// Inline spacing for horizontally arranged elements (auto removes last-child margin)
+/// @param {Number} $size - Spacing multiplier
+/// @example scss
+///   .tags { @include bg.spacing-inline(1); }  // 1 unit between tags
+@mixin spacing-inline($size: 1) {
+  margin-right: h($size);
+  
+  &:last-child {
+    margin-right: 0;
+  }
+}
+
+/// Responsive spacing scale with vertical and horizontal values per breakpoint
+/// @param {Map} $scale-map - Map of breakpoint → (v, h) tuple
+/// @example scss
+///   @include bg.spacing-scale((
+///     'xs': (1, 0.5),
+///     'm': (2, 1),
+///     'xl': (3, 2)
+///   ));
+@mixin spacing-scale($scale-map) {
+  @each $bp, $values in $scale-map {
+    $v-val: nth($values, 1);
+    $h-val: if(length($values) > 1, nth($values, 2), $v-val);
+    
+    @if getFromScale($bp, 'min-width') == 0 {
+      padding: v($v-val) h($h-val);
+    } @else {
+      @include respond-to($bp) {
+        padding: v($v-val) h($h-val);
+      }
+    }
+  }
+}
+
+//==================================================================================
+// CONTAINER QUERY HELPERS (v3.0.0)
+//==================================================================================
+
+/// Container query using horizontal grid units as threshold
+/// @param {Number} $min-units - Minimum width in horizontal grid units
+/// @example scss
+///   .card {
+///     container-type: inline-size;
+///     @include bg.container-min-h(20) {
+///       display: flex;  // Flex layout when wider than 20h units
+///     }
+///   }
+@mixin container-min-h($min-units) {
+  $px-value: h-static($min-units);
+  @container (min-width: #{$px-value}px) {
+    @content;
+  }
+}
+
+/// Container query using vertical grid units as threshold
+/// @param {Number} $min-units - Minimum height in vertical grid units
+/// @example scss
+///   @include bg.container-min-v(10) {
+///     padding: bg.v(2);
+///   }
+@mixin container-min-v($min-units) {
+  $px-value: v-static($min-units);
+  @container (min-height: #{$px-value}px) {
+    @content;
+  }
+}
+
+/// Container query scale (like bg.scale but for container queries)
+/// @param {String} $property - CSS property name
+/// @param {Map} $unit-map - Map of container width (in h units) → values
+/// @example scss
+///   @include bg.container-scale('padding', (
+///     0: bg.v(1),    // Default (no container query)
+///     15: bg.v(2),   // At 15h units wide
+///     30: bg.v(3)    // At 30h units wide
+///   ));
+@mixin container-scale($property, $unit-map) {
+  @each $units, $value in $unit-map {
+    @if $units == 0 {
+      #{$property}: $value;
+    } @else {
+      $px-value: h-static($units);
+      @container (min-width: #{$px-value}px) {
+        #{$property}: $value;
+      }
+    }
+  }
+}
+
 /// Initialize baseline grid system (call once in global styles)
 /// Sets vertical-align: baseline on pseudo-elements for consistent alignment
 /// @example scss - Initialize
@@ -423,6 +714,8 @@ $_vertical-align: $_distance-bottom - $_distance-top;
   }
   & {
     --base-unit: calc(var(--base-line-height) / #{$_base-scale});
+    --width-optical-adjustment: #{$width-optical-adjustment};
+    --right-side-optical-adjustment: #{$right-side-optical-adjustment};
     font-size: var(--base-font-size);
     line-height: var(--base-line-height);
     @if ($debug == 1) {
