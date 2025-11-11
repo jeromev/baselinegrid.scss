@@ -70,6 +70,10 @@ html {
   background-position: left top;
 }
 
+body {
+  margin: 0;
+}
+
 article {
   transition: padding 0.3s cubic-bezier(0.65, 0.05, 0.36, 1);
 }
@@ -253,27 +257,32 @@ p:after {
   vertical-align: calc(var(--base-line-height) * -1);
 }
 
-section p:nth-of-type(1):before, section p:nth-of-type(1):after, section figcaption:nth-of-type(1):before, section figcaption:nth-of-type(1):after {
+strong em {
+  color: red;
+  font-style: normal;
+}
+
+section p:nth-of-type(1):before, section p:nth-of-type(1):after {
   height: var(--base-line-height);
   content: "";
 }
-section p:nth-of-type(1):after, section figcaption:nth-of-type(1):after {
+section p:nth-of-type(1):after {
   vertical-align: calc(var(--base-line-height) * -1);
 }
-section p:nth-of-type(2), section figcaption:nth-of-type(2) {
+section p:nth-of-type(2) {
   font-size: 23px;
   --line-height: calc(var(--base-unit) * 2);
   line-height: var(--line-height);
 }
-section p:nth-of-type(2):before, section p:nth-of-type(2):after, section figcaption:nth-of-type(2):before, section figcaption:nth-of-type(2):after {
+section p:nth-of-type(2):before, section p:nth-of-type(2):after {
   height: var(--line-height);
   content: "";
 }
-section p:nth-of-type(2):after, section figcaption:nth-of-type(2):after {
+section p:nth-of-type(2):after {
   vertical-align: calc(var(--line-height) * -1);
 }
 @media (min-width: 375px) {
-  section p:nth-of-type(2), section figcaption:nth-of-type(2) {
+  section p:nth-of-type(2) {
     font-size: 23px;
     --base-unit: 13px;
     --line-height: calc(var(--base-unit) * 2);
@@ -281,7 +290,7 @@ section p:nth-of-type(2):after, section figcaption:nth-of-type(2):after {
   }
 }
 @media (min-width: 560px) {
-  section p:nth-of-type(2), section figcaption:nth-of-type(2) {
+  section p:nth-of-type(2) {
     font-size: 23px;
     --base-unit: 14px;
     --line-height: calc(var(--base-unit) * 2);
@@ -289,7 +298,7 @@ section p:nth-of-type(2):after, section figcaption:nth-of-type(2):after {
   }
 }
 @media (min-width: 768px) {
-  section p:nth-of-type(2), section figcaption:nth-of-type(2) {
+  section p:nth-of-type(2) {
     font-size: 23px;
     --base-unit: 15px;
     --line-height: calc(var(--base-unit) * 2);
@@ -297,7 +306,7 @@ section p:nth-of-type(2):after, section figcaption:nth-of-type(2):after {
   }
 }
 @media (min-width: 1024px) {
-  section p:nth-of-type(2), section figcaption:nth-of-type(2) {
+  section p:nth-of-type(2) {
     font-size: 23px;
     --base-unit: 16px;
     --line-height: calc(var(--base-unit) * 2);
@@ -305,7 +314,7 @@ section p:nth-of-type(2):after, section figcaption:nth-of-type(2):after {
   }
 }
 @media (min-width: 1440px) {
-  section p:nth-of-type(2), section figcaption:nth-of-type(2) {
+  section p:nth-of-type(2) {
     font-size: 23px;
     --base-unit: 17px;
     --line-height: calc(var(--base-unit) * 2);
@@ -313,28 +322,28 @@ section p:nth-of-type(2):after, section figcaption:nth-of-type(2):after {
   }
 }
 @media (min-width: 2004px) {
-  section p:nth-of-type(2), section figcaption:nth-of-type(2) {
+  section p:nth-of-type(2) {
     font-size: 23px;
     --base-unit: 18px;
     --line-height: calc(var(--base-unit) * 2);
     line-height: var(--line-height);
   }
 }
-section p:nth-of-type(3), section figcaption:nth-of-type(3) {
+section p:nth-of-type(3) {
   padding-top: calc(1 * var(--base-unit));
   font-size: 11px;
   --line-height: calc(var(--base-unit) * 1);
   line-height: var(--line-height);
 }
-section p:nth-of-type(3):before, section p:nth-of-type(3):after, section figcaption:nth-of-type(3):before, section figcaption:nth-of-type(3):after {
+section p:nth-of-type(3):before, section p:nth-of-type(3):after {
   height: var(--line-height);
   content: "";
 }
-section p:nth-of-type(3):after, section figcaption:nth-of-type(3):after {
+section p:nth-of-type(3):after {
   vertical-align: calc(var(--line-height) * -1);
 }
 @media (min-width: 375px) {
-  section p:nth-of-type(3), section figcaption:nth-of-type(3) {
+  section p:nth-of-type(3) {
     font-size: 11px;
     --base-unit: 13px;
     --line-height: calc(var(--base-unit) * 1);
@@ -342,7 +351,7 @@ section p:nth-of-type(3):after, section figcaption:nth-of-type(3):after {
   }
 }
 @media (min-width: 560px) {
-  section p:nth-of-type(3), section figcaption:nth-of-type(3) {
+  section p:nth-of-type(3) {
     font-size: 11px;
     --base-unit: 14px;
     --line-height: calc(var(--base-unit) * 1);
@@ -350,7 +359,7 @@ section p:nth-of-type(3):after, section figcaption:nth-of-type(3):after {
   }
 }
 @media (min-width: 768px) {
-  section p:nth-of-type(3), section figcaption:nth-of-type(3) {
+  section p:nth-of-type(3) {
     font-size: 11px;
     --base-unit: 15px;
     --line-height: calc(var(--base-unit) * 1);
@@ -358,7 +367,7 @@ section p:nth-of-type(3):after, section figcaption:nth-of-type(3):after {
   }
 }
 @media (min-width: 1024px) {
-  section p:nth-of-type(3), section figcaption:nth-of-type(3) {
+  section p:nth-of-type(3) {
     font-size: 11px;
     --base-unit: 16px;
     --line-height: calc(var(--base-unit) * 1);
@@ -366,7 +375,7 @@ section p:nth-of-type(3):after, section figcaption:nth-of-type(3):after {
   }
 }
 @media (min-width: 1440px) {
-  section p:nth-of-type(3), section figcaption:nth-of-type(3) {
+  section p:nth-of-type(3) {
     font-size: 11px;
     --base-unit: 17px;
     --line-height: calc(var(--base-unit) * 1);
@@ -374,23 +383,12 @@ section p:nth-of-type(3):after, section figcaption:nth-of-type(3):after {
   }
 }
 @media (min-width: 2004px) {
-  section p:nth-of-type(3), section figcaption:nth-of-type(3) {
+  section p:nth-of-type(3) {
     font-size: 11px;
     --base-unit: 18px;
     --line-height: calc(var(--base-unit) * 1);
     line-height: var(--line-height);
   }
-}
-
-figure {
-  margin: 0;
-  padding-top: calc(1 * var(--base-unit));
-}
-figure img {
-  width: 100%;
-  object-fit: cover;
-  height: calc(20 * var(--base-unit));
-  display: block;
 }
 
 #gridblock {
