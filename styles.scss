@@ -10,6 +10,10 @@ html {
   @include bg.root();
 }
 
+body {
+  margin: 0;
+}
+
 article {
   transition: padding .3s cubic-bezier(.65,.05,.36,1);
   > section {
@@ -58,8 +62,13 @@ p {
   @include bg.set();
 }
 
+strong em {
+  color: red;
+  font-style: normal;
+}
+
 section {
-  p, figcaption {
+  p {
     &:nth-of-type(1) {
       @include bg.set();
     }
@@ -70,17 +79,6 @@ section {
       padding-top: bg.v();
       @include bg.set(11px);
     }
-  }
-}
-
-figure {
-  margin: 0;
-  padding-top: bg.v();
-  img {
-    width: 100%;
-    object-fit: cover;
-    height: bg.v(20);
-    display: block;
   }
 }
 
