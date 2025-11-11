@@ -61,6 +61,8 @@ html {
 }
 html {
   --base-unit: calc(var(--base-line-height) / 2);
+  --width-optical-adjustment: 1.1;
+  --right-side-optical-adjustment: 0.8;
   font-size: var(--base-font-size);
   line-height: var(--base-line-height);
   background-image: linear-gradient(to bottom, rgba(0, 0, 0, 0.2) 0%, transparent 10%);
@@ -73,41 +75,41 @@ article {
 }
 article > section {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(calc(18 * var(--base-unit) * 1.1), 1fr));
-  column-gap: calc(1 * var(--base-unit) * 1.1);
+  grid-template-columns: repeat(auto-fit, minmax(calc(18 * var(--base-unit) * var(--width-optical-adjustment)), 1fr));
+  column-gap: calc(1 * var(--base-unit) * var(--width-optical-adjustment));
   padding: calc(1 * var(--base-unit)) 0;
 }
 article {
-  padding: calc(1 * var(--base-unit)) calc(0.8 * var(--base-unit) * 1.1) calc(1 * var(--base-unit)) calc(1 * var(--base-unit) * 1.1);
+  padding: calc(1 * var(--base-unit)) calc(1 * var(--base-unit) * var(--width-optical-adjustment) * var(--right-side-optical-adjustment)) calc(1 * var(--base-unit)) calc(1 * var(--base-unit) * var(--width-optical-adjustment));
 }
 @media (min-width: 375px) {
   article {
-    padding: calc(2 * var(--base-unit)) calc(1.6 * var(--base-unit) * 1.1) calc(2 * var(--base-unit)) calc(2 * var(--base-unit) * 1.1);
+    padding: calc(2 * var(--base-unit)) calc(2 * var(--base-unit) * var(--width-optical-adjustment) * var(--right-side-optical-adjustment)) calc(2 * var(--base-unit)) calc(2 * var(--base-unit) * var(--width-optical-adjustment));
   }
 }
 @media (min-width: 560px) {
   article {
-    padding: calc(3 * var(--base-unit)) calc(2.4 * var(--base-unit) * 1.1) calc(3 * var(--base-unit)) calc(3 * var(--base-unit) * 1.1);
+    padding: calc(3 * var(--base-unit)) calc(3 * var(--base-unit) * var(--width-optical-adjustment) * var(--right-side-optical-adjustment)) calc(3 * var(--base-unit)) calc(3 * var(--base-unit) * var(--width-optical-adjustment));
   }
 }
 @media (min-width: 768px) {
   article {
-    padding: calc(4 * var(--base-unit)) calc(3.2 * var(--base-unit) * 1.1) calc(4 * var(--base-unit)) calc(4 * var(--base-unit) * 1.1);
+    padding: calc(4 * var(--base-unit)) calc(4 * var(--base-unit) * var(--width-optical-adjustment) * var(--right-side-optical-adjustment)) calc(4 * var(--base-unit)) calc(4 * var(--base-unit) * var(--width-optical-adjustment));
   }
 }
 @media (min-width: 1024px) {
   article {
-    padding: calc(5 * var(--base-unit)) calc(4 * var(--base-unit) * 1.1) calc(5 * var(--base-unit)) calc(5 * var(--base-unit) * 1.1);
+    padding: calc(5 * var(--base-unit)) calc(5 * var(--base-unit) * var(--width-optical-adjustment) * var(--right-side-optical-adjustment)) calc(5 * var(--base-unit)) calc(5 * var(--base-unit) * var(--width-optical-adjustment));
   }
 }
 @media (min-width: 1440px) {
   article {
-    padding: calc(8 * var(--base-unit)) calc(6.4 * var(--base-unit) * 1.1) calc(8 * var(--base-unit)) calc(8 * var(--base-unit) * 1.1);
+    padding: calc(8 * var(--base-unit)) calc(8 * var(--base-unit) * var(--width-optical-adjustment) * var(--right-side-optical-adjustment)) calc(8 * var(--base-unit)) calc(8 * var(--base-unit) * var(--width-optical-adjustment));
   }
 }
 @media (min-width: 2004px) {
   article {
-    padding: calc(10 * var(--base-unit)) calc(8 * var(--base-unit) * 1.1) calc(10 * var(--base-unit)) calc(10 * var(--base-unit) * 1.1);
+    padding: calc(10 * var(--base-unit)) calc(10 * var(--base-unit) * var(--width-optical-adjustment) * var(--right-side-optical-adjustment)) calc(10 * var(--base-unit)) calc(10 * var(--base-unit) * var(--width-optical-adjustment));
   }
 }
 
@@ -116,7 +118,7 @@ h1, h2 {
 }
 
 h1, h2, p {
-  max-width: calc(40 * var(--base-unit) * 1.1);
+  max-width: calc(40 * var(--base-unit) * var(--width-optical-adjustment));
   margin: 0;
   transition: all 0.3s cubic-bezier(0.65, 0.05, 0.36, 1);
 }
@@ -395,8 +397,8 @@ figure img {
   position: fixed;
   top: 0;
   background-color: red;
-  left: calc(1 * var(--base-unit) * 1.1);
-  width: calc(1 * var(--base-unit) * 1.1);
+  left: calc(1 * var(--base-unit) * var(--width-optical-adjustment));
+  width: calc(1 * var(--base-unit) * var(--width-optical-adjustment));
   height: calc(1 * var(--base-unit));
 }
 
