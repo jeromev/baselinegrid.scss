@@ -14,7 +14,7 @@
 //==================================================================================
 // VERSION
 //==================================================================================
-$version: '3.0.0' !default;
+$version: '3.0.1' !default;
 
 //==================================================================================
 // LIBRARIES (SASS MODULES)
@@ -337,7 +337,7 @@ $_vertical-align: $_distance-bottom - $_distance-top;
     'width-optical-adjustment': $width-optical-adjustment,
     'debug': $debug,
     'preset': $preset,
-    'version': '3.0.0'
+    'version': '3.0.1'
   );
 }
 
