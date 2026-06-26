@@ -2,7 +2,7 @@
 
 **An SCSS toolkit for aligning text and layout to a baseline grid, with compile-time configuration validation and responsive utilities.**
 
-[![Version](https://img.shields.io/badge/version-3.1.0-blue.svg)](https://github.com/jeromev/baselinegrid.scss)
+[![Version](https://img.shields.io/badge/version-3.1.1-blue.svg)](https://github.com/jeromev/baselinegrid.scss)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
 The toolkit snaps line boxes to a vertical grid: it sets each element's
