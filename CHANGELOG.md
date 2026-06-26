@@ -1,5 +1,80 @@
 # Changelog
 
+## [3.1.0] - 2026-06-26
+
+### Added
+- **Opt-in font-metric correction**: `$metric-correction` (default `false`) makes
+  `set()` / `scale()` emit a metric-derived `translateY` that nudges text onto the
+  baseline. The shift is expressed in `em`, so one declaration covers all
+  breakpoints.
+- **`baseline-shift($preset)`**: public function returning the per-font em
+  coefficient (Georgia ≈ -0.0049em, Verdana ≈ -0.068em). Computed on demand.
+- **Verdana preset** alongside Georgia; `set()` / `scale()` accept a `$preset`
+  argument for per-component fonts.
+
+### Changed
+- **`$right-side-optical-adjustment` now defaults to `1`** (was `0.8`), i.e.
+  symmetric horizontal padding by default. Set it `< 1` to optically trim the
+  right side as before.
+- **The `spacing-*` family now honors `$right-side-optical-adjustment`** (right
+  side uses `h-right()`), consistent with `pad()` / `marg()`.
+- **Font-metrics internals refactored**: the eagerly-computed (and partly dead)
+  metric variables were replaced by the lazy `baseline-shift()` function, so
+  nothing is computed unless the correction is used.
+- **Debug overlay is now legible**: `show-grid()` draws a sharp 1px rule at each
+  baseline (every 2 grid units) over a lighter rule at each grid unit, instead of
+  the previous faint top-of-tile fade. The demo enables it and sets a background
+  so the grid is visible in `index.html`.
+- README rewritten in a precise, technical register (no "InDesign-like"
+  superlatives); added a "How alignment works" section documenting the line-box
+  stacking approach and its limits.
+
+### Fixed
+- **Invalid CSS in fluid spacing**: `v-fluid()` / `h-fluid()` emitted a doubled
+  unit (`clamp(24pxpx, …)`) that browsers discard. They now emit valid `clamp()`
+  expressions.
+- **Invalid CSS in container queries**: `container-min-h()`, `container-min-v()`
+  and `container-scale()` emitted `@container (min-width: 264pxpx)`. Fixed (the
+  helpers already return px, so the extra `px` is no longer appended).
+- **`em()` / `rem()` with unitless input**: `rem(0)` / `em(0)` produced the
+  invalid token `calc(0 / 1px)rem`. Zero and unitless values are now handled.
+- **`$breakpoints` drift**: the breakpoint map is now derived from `$scale`
+  with a loop, so `breakpoint()` / `respond-to()` and `has-breakpoint()` agree
+  even when custom breakpoints are added.
+- **Documentation values**: `v-static(2)` is documented as `24px` (was wrongly
+  `48px`); `breakpoint('m')` JSDoc corrected to `560px` (was `600px`).
+- **Version drift**: `$version`, `get-config()`, the README badge and the
+  lockfile are all aligned; `get-config()` now reports `$version` instead of a
+  hardcoded literal.
+
+### Changed
+- **Deprecations removed**: replaced the deprecated global `unquote`/`nth`/
+  `length` and the deprecated `if()` function syntax; added `sass:list` and
+  `sass:string`. Compiling now produces no Sass deprecation warnings.
+- **`set-scale()`** now `@warn`s that it cannot reconfigure the module at
+  runtime (it was a silent no-op) and points to `@use … with (...)`.
+- **Removed dead/broken legacy mixins** `align-old()` and `box()` (they
+  referenced undefined variables and emitted invalid CSS).
+- The `spacing-*` family is now documented as using symmetric horizontal
+  padding (use `pad()` / `marg()` for the right-side optical adjustment).
+
+### Packaging / tooling
+- Added a Sass `exports` condition and `sass` field so `@use 'pkg:baselinegrid.scss'`
+  resolves; added a `files` allowlist so the npm tarball ships only the library,
+  README, CHANGELOG and LICENSE (no demo artifacts).
+- Added `sass` as a devDependency and `build` / `test` npm scripts, plus a
+  compile smoke-test (`test/`) that fails on invalid CSS.
+
+## [3.0.2] - 2025-11-11
+
+### Changed
+- Packaging preparation for npm publish; regenerated `styles.css`.
+
+## [3.0.1] - 2025-11-10
+
+### Documentation
+- Expanded the README with comprehensive v3.0 feature documentation.
+
 ## [3.0.0] - 2025-11-10
 
 ### Added - New Utility Functions

@@ -20,6 +20,8 @@ body *:after {
 
 html {
   font-family: Georgia, serif;
+  background: #fff;
+  color: #111;
   --base-font-size: 15px;
   --base-line-height: 24px;
 }
@@ -62,12 +64,13 @@ html {
 html {
   --base-unit: calc(var(--base-line-height) / 2);
   --width-optical-adjustment: 1.1;
-  --right-side-optical-adjustment: 0.8;
+  --right-side-optical-adjustment: 1;
   font-size: var(--base-font-size);
   line-height: var(--base-line-height);
-  background-image: linear-gradient(to bottom, rgba(0, 0, 0, 0.2) 0%, transparent 10%);
-  background-size: 100% var(--base-unit);
+  background-image: linear-gradient(to bottom, transparent calc(100% - 1px), rgba(0, 0, 0, 0.3) calc(100% - 1px)), linear-gradient(to bottom, transparent calc(100% - 1px), rgba(0, 0, 0, 0.12) calc(100% - 1px));
+  background-size: 100% calc(var(--base-unit) * 2), 100% var(--base-unit);
   background-position: left top;
+  background-repeat: repeat;
 }
 
 body {

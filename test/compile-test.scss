@@ -1,0 +1,94 @@
+// Compile smoke-test: exercises every public function and mixin so that
+// invalid CSS (e.g. the historical "pxpx" / "calc(0 / 1px)" bugs) shows up in
+// the output and is caught by test/check.js. Run via `npm test`.
+@use '../baselinegrid' as bg;
+
+:root {
+  @include bg.root();
+}
+
+// --- grid unit functions ---
+.units {
+  a: bg.v(2);
+  b: bg.h(2);
+  c: bg.h-right(2);
+  d: bg.h(2, true);
+  e: bg.vertical-grid-units(3);
+  f: bg.horizontal-grid-units(3, true);
+  g: bg.v0();
+  i: bg.h0();
+}
+
+// --- static (compile-time) values ---
+.static {
+  --vs: #{bg.v-static(2)};
+  --hs: #{bg.h-static(11)};
+}
+
+// --- unit conversion (incl. the unitless / zero edge cases) ---
+.convert {
+  a: bg.em(16px);
+  b: bg.rem(24px);
+  c: bg.em(0);
+  d: bg.rem(0);
+  e: bg.rem(5);
+}
+
+// --- fluid spacing (historically emitted invalid pxpx) ---
+.fluid {
+  padding: bg.v-fluid('xs', 'xl', 2, 4);
+  width: bg.h-fluid('m', 'xxl', 10, 20);
+}
+
+// --- clamped spacing ---
+.clamp {
+  padding: bg.v-clamp(2, 1, 3);
+  width: bg.h-clamp(20, 15, 30);
+}
+
+// --- config queries ---
+.config {
+  bp: bg.breakpoint('m');
+  fs: bg.getFromScale('m', 'font-size');
+  has: #{bg.has-breakpoint('xl')};
+  list: #{bg.get-breakpoints()};
+  preset: #{bg.getFromPreset('Georgia', 'EmSize')};
+}
+
+// --- typography mixins ---
+p { @include bg.set(); }
+.heading { @include bg.set(23px); }
+.scaled {
+  @include bg.scale('font-size', ('xs': 30px, 'm': 42px, 'xl': 48px));
+}
+
+// --- spacing mixins ---
+.pad { @include bg.pad(2); }
+.marg { @include bg.marg(2); }
+.padh { @include bg.padh(2); }
+.padv { @include bg.padv(2); }
+.padscale { @include bg.pad-scale(); }
+.s1 { @include bg.spacing(2); }
+.s2 { @include bg.spacing(3, 2); }
+.s3 { @include bg.spacing-symmetric(2); }
+.s4 { @include bg.spacing-custom(2, 1, 3, 1); }
+.s5 { @include bg.spacing-stack(2); }
+.s6 { @include bg.spacing-inline(1); }
+.s7 { @include bg.spacing-scale(('xs': (1, 0.5), 'm': (2, 1), 'xl': (3, 2))); }
+
+// --- container queries (historically emitted invalid pxpx) ---
+.cq1 { @include bg.container-min-h(20) { color: red; } }
+.cq2 { @include bg.container-min-v(10) { color: blue; } }
+.cq3 {
+  @include bg.container-scale('padding', (0: bg.v(1), 15: bg.v(2), 30: bg.v(3)));
+}
+
+// --- font metrics ---
+.metric {
+  shift-georgia: #{bg.baseline-shift('Georgia')};
+  shift-verdana: #{bg.baseline-shift('Verdana')};
+  transform: translateY(#{bg.baseline-shift('Verdana')}em);
+}
+
+// --- responsive helpers ---
+.resp { @include bg.respond-to('m') { color: green; } }
