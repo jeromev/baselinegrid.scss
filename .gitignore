@@ -6,6 +6,11 @@ node_modules/
 # sass
 .sass-cache
 
+# test build artifacts
+test/.build.css
+test/.build.css.map
+test/.build.err
+
 # System Files
 .DS_Store
 Thumbs.db

@@ -1,7 +1,7 @@
 {
   "name": "baselinegrid.scss",
   "description": "A modern SCSS toolkit for aligning text and layout to a baseline grid with configuration validation, responsive utilities, fluid spacing, and container queries.",
-  "version": "3.0.2",
+  "version": "3.1.0",
   "keywords": [
     "sass",
     "scss",
@@ -17,6 +17,26 @@
     "email": "jerome.vogel@gmail.com"
   },
   "main": "_baselinegrid.scss",
+  "sass": "_baselinegrid.scss",
+  "exports": {
+    ".": {
+      "sass": "./_baselinegrid.scss",
+      "style": "./_baselinegrid.scss",
+      "default": "./_baselinegrid.scss"
+    },
+    "./baselinegrid": "./_baselinegrid.scss",
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "_baselinegrid.scss",
+    "README.md",
+    "CHANGELOG.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "build": "sass styles.scss styles.css",
+    "test": "sass --no-source-map test/compile-test.scss test/.build.css && node test/check.js"
+  },
   "repository": {
     "type": "git",
     "url": "https://github.com/jeromev/baselinegrid.scss.git"
@@ -24,6 +44,7 @@
   "license": "MIT",
   "homepage": "https://github.com/jeromev/baselinegrid.scss",
   "devDependencies": {
-    "sanitize.css": "^13.0.0"
+    "sanitize.css": "^13.0.0",
+    "sass": "^1.101.0"
   }
 }

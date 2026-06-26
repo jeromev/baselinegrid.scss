@@ -14,7 +14,7 @@
 //==================================================================================
 // VERSION
 //==================================================================================
-$version: '3.0.1' !default;
+$version: '3.1.0' !default;
 
 //==================================================================================
 // LIBRARIES (SASS MODULES)
@@ -22,6 +22,8 @@ $version: '3.0.1' !default;
 @use "sass:map";
 @use "sass:math";
 @use "sass:meta";
+@use "sass:list";
+@use "sass:string";
 
 //==================================================================================
 // CONFIGURATION OPTIONS
@@ -74,23 +76,20 @@ $scale: (
   )
 ) !default;
 
-// Breakpoint system derived from $scale - used for respond-to() mixin
-// This automatically stays in sync with your scale configuration
-$breakpoints: (
-  'xs': map.get(map.get($scale, 'xs'), 'min-width'),
-  's': map.get(map.get($scale, 's'), 'min-width'),
-  'm': map.get(map.get($scale, 'm'), 'min-width'),
-  'l': map.get(map.get($scale, 'l'), 'min-width'),
-  'xl': map.get(map.get($scale, 'xl'), 'min-width'),
-  'xxl': map.get(map.get($scale, 'xxl'), 'min-width'),
-  'ul': map.get(map.get($scale, 'ul'), 'min-width')
-) !default;
+// Breakpoint system derived from $scale - used for respond-to() mixin.
+// Built with a loop so it ALWAYS stays in sync with the configured $scale,
+// including any custom/extra breakpoint keys (override $scale, not this map).
+$breakpoints: ();
+@each $_bp, $_cfg in $scale {
+  $breakpoints: map.set($breakpoints, $_bp, map.get($_cfg, 'min-width'));
+}
 
 // Optical adjustment for horizontal grid units (tweak for visual balance)
 $width-optical-adjustment: 1.1 !default;        // relative to 1 vertical grid-unit
-$right-side-optical-adjustment: .8 !default;     // relative to 1 horizontal grid-unit (set to 1 for symmetric padding)
+$right-side-optical-adjustment: 1 !default;      // right padding factor (1 = symmetric; <1 optically trims the right side)
 $debug: 0 !default;                             // Set to 1 to show grid overlay
-$preset: 'Georgia' !default;                    // Font metrics preset (expandable)
+$preset: 'Georgia' !default;                    // Default font metrics preset (see $_presets)
+$metric-correction: false !default;             // Opt-in: nudge text onto the baseline using font metrics (set()/scale())
 
 //==================================================================================
 // CONFIGURATION VALIDATION
@@ -204,7 +203,7 @@ $preset: 'Georgia' !default;                    // Font metrics preset (expandab
 /// @param {String} $breakpoint - The breakpoint name
 /// @return {Number} The breakpoint value in pixels
 /// @example scss - Usage
-///   $tablet-width: breakpoint('m'); // Returns 600px
+///   $tablet-width: breakpoint('m'); // Returns 560px
 @function breakpoint($breakpoint) {
   @if map.has-key($breakpoints, $breakpoint) {
     @return map.get($breakpoints, $breakpoint);
@@ -222,48 +221,67 @@ $_base-scale: 2; // Number of vertical grid units per line
 $_base-unit: math.div(map.get(map.get($scale, 'xs'), 'line-height'), $_base-scale); // px
 
 //==================================================================================
-// FONT METRICS PRESETS (expand for more fonts)
+// FONT METRICS PRESETS (add more fonts as needed)
 //==================================================================================
+// Per-font metrics in font design units, read from the font's OS/2 + head tables
+// (sTypoAscender / sTypoDescender / sTypoLineGap / sCapHeight / sxHeight / unitsPerEm),
+// matching the dataset used by Capsize (https://seek-oss.github.io/capsize/).
+// Descent is stored as a positive number. Add a key here to support another font.
 $_presets: (
   'Georgia': (
     'EmSize': 2048,
-    'CapHeight': 1419, // 0.6928
+    'CapHeight': 1419,
     'XHeight': 986,
-    'Ascent': 1878, // 0.917
-    'Descent': 449, // 0.219
+    'Ascent': 1878,
+    'Descent': 449,
     'LineGap': 198
+  ),
+  'Verdana': (
+    'EmSize': 2048,
+    'CapHeight': 1489,
+    'XHeight': 1117,
+    'Ascent': 2059,
+    'Descent': 430,
+    'LineGap': 0
   )
 );
-// Metrics calculations for vertical alignment (relative to font-size)
-$_line-height-normal: math.div(
-  map.get(map.get($_presets, $preset), 'Ascent') +
-  map.get(map.get($_presets, $preset), 'Descent') +
-  map.get(map.get($_presets, $preset), 'LineGap'),
-  map.get(map.get($_presets, $preset), 'EmSize')
-);
-$_content-area: math.div(
-  $_line-height-normal * map.get(map.get($_presets, $preset), 'CapHeight'),
-  map.get(map.get($_presets, $preset), 'EmSize')
-);
-$_distance-top: math.div(
-  map.get(map.get($_presets, $preset), 'Ascent') - map.get(map.get($_presets, $preset), 'CapHeight'),
-  map.get(map.get($_presets, $preset), 'EmSize')
-);
-$_distance-bottom: math.div(
-  map.get(map.get($_presets, $preset), 'Descent'),
-  map.get(map.get($_presets, $preset), 'EmSize')
-);
-$_vertical-align: $_distance-bottom - $_distance-top;
+
+/// Baseline-shift coefficient for a font preset, expressed as a fraction of the
+/// em (so it scales with font-size when used as an `em` length). It is the gap
+/// below the baseline (descent) minus the gap above the caps (ascent - cap-height);
+/// applied as translateY it optically balances the glyph within its line box.
+/// Computed on demand — nothing here runs unless metric correction is used.
+/// @param {String} $preset - Preset name (defaults to the configured $preset)
+/// @return {Number} Unitless em coefficient (Georgia ≈ -0.0049em, Verdana ≈ -0.0684em)
+/// @example scss
+///   transform: translateY(#{bg.baseline-shift('Verdana')}em);
+@function baseline-shift($preset: $preset) {
+  $m: map.get($_presets, $preset);
+  @if $m == null {
+    @error 'baselinegrid.scss: unknown font preset "#{$preset}". Available presets: #{map.keys($_presets)}.';
+  }
+  $em: map.get($m, 'EmSize');
+  $distance-top: math.div(map.get($m, 'Ascent') - map.get($m, 'CapHeight'), $em);
+  $distance-bottom: math.div(map.get($m, 'Descent'), $em);
+  @return $distance-bottom - $distance-top;
+}
 
 //==================================================================================
 // UTILITY FUNCTIONS
 //==================================================================================
-// Convert px to em units (relative to font-size)
+// Convert px to em units (relative to font-size).
+// NOTE: the result uses the xs base font-size by default, so it is only
+// accurate at the 'xs' breakpoint unless you pass an explicit $font-size.
 @function em($px, $font-size: $_base-font-size) {
+  @if $px == 0 { @return 0; }
+  @if math.is-unitless($px) { $px: $px * 1px; } // tolerate unitless input
   @return math.div($px, $font-size) + em;
 }
-// Convert px to rem units (relative to root font-size)
+// Convert px to rem units (relative to root font-size).
+// Same xs-base caveat as em(); pass $font-size to target another breakpoint.
 @function rem($px, $font-size: $_base-font-size) {
+  @if $px == 0 { @return 0; }
+  @if math.is-unitless($px) { $px: $px * 1px; } // tolerate unitless input
   @return math.div($px, $font-size) + rem;
 }
 // Calculate horizontal grid units (for padding/margin)
@@ -337,7 +355,7 @@ $_vertical-align: $_distance-bottom - $_distance-top;
     'width-optical-adjustment': $width-optical-adjustment,
     'debug': $debug,
     'preset': $preset,
-    'version': '3.0.1'
+    'version': $version
   );
 }
 
@@ -402,16 +420,18 @@ $_vertical-align: $_distance-bottom - $_distance-top;
   $end-lh: getFromScale($end-bp, 'line-height');
   $start-unit: math.div($start-lh, $_base-scale);
   $end-unit: math.div($end-lh, $_base-scale);
-  
+
   $start-px: $start-unit * $start-value;
   $end-px: $end-unit * $end-value;
   $slope: math.div($end-px - $start-px, $end-width - $start-width);
   $intercept: $start-px - ($slope * $start-width);
-  
+
+  // Strip the px unit before re-appending it during interpolation, otherwise
+  // an already-px value like 24px becomes the invalid CSS token "24pxpx".
   @return clamp(
-    #{$start-px}px,
-    calc(#{$intercept}px + #{$slope * 100}vw),
-    #{$end-px}px
+    #{math.div($start-px, 1px)}px,
+    calc(#{math.div($intercept, 1px)}px + #{$slope * 100}vw),
+    #{math.div($end-px, 1px)}px
   );
 }
 
@@ -430,16 +450,18 @@ $_vertical-align: $_distance-bottom - $_distance-top;
   $end-lh: getFromScale($end-bp, 'line-height');
   $start-unit: math.div($start-lh, $_base-scale) * $width-optical-adjustment;
   $end-unit: math.div($end-lh, $_base-scale) * $width-optical-adjustment;
-  
+
   $start-px: $start-unit * $start-value;
   $end-px: $end-unit * $end-value;
   $slope: math.div($end-px - $start-px, $end-width - $start-width);
   $intercept: $start-px - ($slope * $start-width);
-  
+
+  // Strip the px unit before re-appending it during interpolation, otherwise
+  // an already-px value like 24px becomes the invalid CSS token "24pxpx".
   @return clamp(
-    #{$start-px}px,
-    calc(#{$intercept}px + #{$slope * 100}vw),
-    #{$end-px}px
+    #{math.div($start-px, 1px)}px,
+    calc(#{math.div($intercept, 1px)}px + #{$slope * 100}vw),
+    #{math.div($end-px, 1px)}px
   );
 }
 
@@ -461,7 +483,7 @@ $_vertical-align: $_distance-bottom - $_distance-top;
 /// @param {String} $breakpoint - Breakpoint to calculate for (default: 'xs')
 /// @return {Number} Static px value
 /// @example scss - Static value for non-responsive component
-///   $icon-size: bg.v-static(2);  // Returns 48px at 'xs'
+///   $icon-size: bg.v-static(2);  // Returns 24px at 'xs'
 @function v-static($multiplier: 1, $breakpoint: 'xs') {
   $line-height: getFromScale($breakpoint, 'line-height');
   @return math.div($line-height, $_base-scale) * $multiplier;
@@ -497,7 +519,7 @@ $_vertical-align: $_distance-bottom - $_distance-top;
   @debug "#{$v}";
   background-color: rgba(255,0,0,0.6);
   &:before {
-    content: unquote("'" + $v + "'");
+    content: string.unquote("'" + $v + "'");
     color: white;
     padding: 0 h(0.5);
     position: absolute;
@@ -542,7 +564,9 @@ $_vertical-align: $_distance-bottom - $_distance-top;
 // ENHANCED SPACING MIXINS (v3.0.0)
 //==================================================================================
 
-/// Common spacing pattern with vertical and horizontal grid units
+/// Common spacing pattern with vertical and horizontal grid units.
+/// Like pad()/marg(), the right side uses h-right(), so it honors
+/// $right-side-optical-adjustment (1 by default, i.e. symmetric).
 /// @param {Number} $v-size - Vertical spacing multiplier
 /// @param {Number} $h-size - Horizontal spacing multiplier (defaults to $v-size if null)
 /// @example scss - Equal spacing
@@ -550,8 +574,9 @@ $_vertical-align: $_distance-bottom - $_distance-top;
 /// @example scss - Different spacing
 ///   @include bg.spacing(3, 2);  // 3 vertical, 2 horizontal
 @mixin spacing($v-size: 1, $h-size: null) {
-  $h: if($h-size, $h-size, $v-size);
-  padding: v($v-size) h($h);
+  $h: $v-size;
+  @if $h-size != null { $h: $h-size; }
+  padding: v($v-size) h-right($h) v($v-size) h($h);
 }
 
 /// Symmetric spacing (same on all sides) - shorthand for common pattern
@@ -559,7 +584,7 @@ $_vertical-align: $_distance-bottom - $_distance-top;
 /// @example scss
 ///   @include bg.spacing-symmetric(2);  // 2 units on all sides
 @mixin spacing-symmetric($size: 1) {
-  padding: v($size) h($size);
+  padding: v($size) h-right($size) v($size) h($size);
 }
 
 /// Asymmetric spacing with individual control for each side
@@ -570,7 +595,7 @@ $_vertical-align: $_distance-bottom - $_distance-top;
 /// @example scss
 ///   @include bg.spacing-custom(2, 1, 3, 1);
 @mixin spacing-custom($top: 0, $right: 0, $bottom: 0, $left: 0) {
-  padding: v($top) h($right) v($bottom) h($left);
+  padding: v($top) h-right($right) v($bottom) h($left);
 }
 
 /// Stack spacing for vertically stacked elements (auto removes last-child margin)
@@ -590,8 +615,8 @@ $_vertical-align: $_distance-bottom - $_distance-top;
 /// @example scss
 ///   .tags { @include bg.spacing-inline(1); }  // 1 unit between tags
 @mixin spacing-inline($size: 1) {
-  margin-right: h($size);
-  
+  margin-right: h-right($size);
+
   &:last-child {
     margin-right: 0;
   }
@@ -607,14 +632,15 @@ $_vertical-align: $_distance-bottom - $_distance-top;
 ///   ));
 @mixin spacing-scale($scale-map) {
   @each $bp, $values in $scale-map {
-    $v-val: nth($values, 1);
-    $h-val: if(length($values) > 1, nth($values, 2), $v-val);
+    $v-val: list.nth($values, 1);
+    $h-val: $v-val;
+    @if list.length($values) > 1 { $h-val: list.nth($values, 2); }
     
     @if getFromScale($bp, 'min-width') == 0 {
-      padding: v($v-val) h($h-val);
+      padding: v($v-val) h-right($h-val) v($v-val) h($h-val);
     } @else {
       @include respond-to($bp) {
-        padding: v($v-val) h($h-val);
+        padding: v($v-val) h-right($h-val) v($v-val) h($h-val);
       }
     }
   }
@@ -634,8 +660,8 @@ $_vertical-align: $_distance-bottom - $_distance-top;
 ///     }
 ///   }
 @mixin container-min-h($min-units) {
-  $px-value: h-static($min-units);
-  @container (min-width: #{$px-value}px) {
+  $px-value: h-static($min-units); // already a px value; do not re-append "px"
+  @container (min-width: #{$px-value}) {
     @content;
   }
 }
@@ -647,8 +673,8 @@ $_vertical-align: $_distance-bottom - $_distance-top;
 ///     padding: bg.v(2);
 ///   }
 @mixin container-min-v($min-units) {
-  $px-value: v-static($min-units);
-  @container (min-height: #{$px-value}px) {
+  $px-value: v-static($min-units); // already a px value; do not re-append "px"
+  @container (min-height: #{$px-value}) {
     @content;
   }
 }
@@ -667,8 +693,8 @@ $_vertical-align: $_distance-bottom - $_distance-top;
     @if $units == 0 {
       #{$property}: $value;
     } @else {
-      $px-value: h-static($units);
-      @container (min-width: #{$px-value}px) {
+      $px-value: h-static($units); // already a px value; do not re-append "px"
+      @container (min-width: #{$px-value}) {
         #{$property}: $value;
       }
     }
@@ -688,9 +714,13 @@ $_vertical-align: $_distance-bottom - $_distance-top;
   }
 }
 
-// Override the scale map (for advanced customization)
+// Override the scale map (for advanced customization).
+// NOTE: a mixin cannot reconfigure a module's scale at runtime — Sass module
+// configuration is immutable after @use. Configure the scale at import time:
+//   @use 'baselinegrid' with ($scale: ( ... ));
+// This mixin is kept only to warn callers who expect the old (no-op) behavior.
 @mixin set-scale($my-scale: $scale) {
-  $scale: $my-scale;
+  @warn 'baselinegrid.scss: set-scale() has no effect — module configuration is immutable. Override the scale at @use time: @use "baselinegrid" with ($scale: (...)).';
 }
 
 /// Apply baseline grid to root element (html or body)
@@ -724,27 +754,34 @@ $_vertical-align: $_distance-bottom - $_distance-top;
   }
 }
 
-// Show the baseline grid as a background image (for debugging)
+// Show the baseline grid as a background image (for debugging).
+// Draws a sharp 1px rule at each text baseline (every 2 grid units) over a
+// lighter 1px rule at each grid unit, so the grid is actually legible.
 @mixin show-grid() {
-  background-image: linear-gradient(
-    to bottom,
-    rgba(0,0,0,0.2) 0%,
-    transparent 10%
-  );
-  background-size: 100% var(--base-unit);
+  background-image:
+    linear-gradient(to bottom, transparent calc(100% - 1px), rgba(0, 0, 0, 0.3) calc(100% - 1px)),
+    linear-gradient(to bottom, transparent calc(100% - 1px), rgba(0, 0, 0, 0.12) calc(100% - 1px));
+  background-size:
+    100% calc(var(--base-unit) * 2),
+    100% var(--base-unit);
   background-position: left top;
+  background-repeat: repeat;
 }
 
-/// Set baseline-aligned font-size and line-height on element
-/// @param {Number} $size [null] - Optional font size (uses scale default if null)
-/// @param {Number} $line-height [null] - Optional line height (uses scale default if null)
+/// Set baseline-aligned font-size and line-height on element.
+/// When $metric-correction is enabled, also nudges the text onto the baseline
+/// using the $preset font metrics (see baseline-shift()).
+/// @param {Number} $font-size - Font size (uses the xs base size if omitted)
+/// @param {Number} $line-height - Reserved; line-height is derived from the grid
+/// @param {String} $preset - Font preset for the metric correction (default $preset)
 /// @example scss - Apply baseline
 ///   p, li {
 ///     @include bg.set();
 ///   }
 @mixin set(
   $font-size: $_base-font-size,
-  $line-height: $_base-unit
+  $line-height: $_base-unit,
+  $preset: $preset
 ) {
   // Calculate number of base units that fit the font-size
   $lines: math.ceil(math.div($font-size, $_base-unit));
@@ -784,9 +821,11 @@ $_vertical-align: $_distance-bottom - $_distance-top;
       vertical-align: calc(var(--base-line-height) * -1);
     }
   }
-  // Uncomment to apply vertical alignment correction based on font metrics:
-  // $translate: $_vertical-align * $font-size;
-  // transform: translateY(rem($translate));
+  // Opt-in font-metric correction: nudge the text onto the baseline. The shift
+  // is in em, so this single declaration scales across every breakpoint.
+  @if $metric-correction {
+    transform: translateY(#{baseline-shift($preset)}em);
+  }
 }
 
 /// Apply responsive values to a CSS property across breakpoints
@@ -798,7 +837,7 @@ $_vertical-align: $_distance-bottom - $_distance-top;
 ///     'm': bg.v(3),
 ///     'xl': bg.v(4)
 ///   ));
-@mixin scale($prop: 'font-size', $scale: null) {
+@mixin scale($prop: 'font-size', $scale: null, $preset: $preset) {
   @if ($scale) {
     @if ($prop == 'font-size') {
       @each $size, $font-size in $scale {
@@ -826,6 +865,10 @@ $_vertical-align: $_distance-bottom - $_distance-top;
       &:after {
         vertical-align: calc(var(--line-height) * -1);
       }
+      // Opt-in font-metric correction (em-based, scales with font-size).
+      @if $metric-correction {
+        transform: translateY(#{baseline-shift($preset)}em);
+      }
     } @else {
       @each $size, $value in $scale {
         @if (getFromScale($size, 'min-width') > 0) {
@@ -837,62 +880,6 @@ $_vertical-align: $_distance-bottom - $_distance-top;
         }
       }
     }
-  }
-}
-
-//==================================================================================
-// LEGACY/EXPERIMENTAL MIXINS (not recommended for new code)
-//==================================================================================
-// These are kept for reference and backward compatibility.
-// Use the main mixins above for new projects.
-
-@mixin align-old(
-  $font-size: $_base-font-size,
-  $offset-top: 0,
-  $offset-bottom: 0,
-  $media: null
-) {
-  $base-font-size: $_base-font-size;
-  @if ($media) {
-    $base-font-size: map.get($medias-base-font-sizes, $media);
-  }
-  $lines: math.ceil(math.div($font-size, $_base-unit));
-  $line-height: $_base-unit * $lines;
-  $baseline-distance: math.div(($_base-unit - $base-cap-height), $_base-scale) * $base-font-size;
-  $offset-top: $offset-top * $_base-unit;
-  $offset-bottom: $offset-bottom * $_base-unit;
-  $padding-top: $baseline-distance + $offset-top;
-  $margin-bottom: $line-height - $baseline-distance - $_base-unit + $offset-bottom;
-  @include box(
-    $font-size,
-    $line-height,
-    $padding-top,
-    $margin-bottom,
-    $media,
-  );
-}
-
-@mixin box(
-  $font-size: $_base-font-size,
-  $line-height: $_base-unit,
-  $padding-top: 0,
-  $margin-bottom: 0,
-  $media: null,
-) {
-  @if ($media and map.get($medias, $media)) {
-    @media (min-width: h(map.get($medias, $media))) {
-      font-size: rem($font-size, map.get($medias-base-font-sizes, $media));
-      // line-height: rem($line-height);
-      padding-top: rem($padding-top, map.get($medias-base-font-sizes, $media));
-      margin-bottom: rem($margin-bottom, map.get($medias-base-font-sizes, $media));
-    }
-  } @else {
-    font-size: rem($font-size);
-    line-height: rem($line-height);
-    padding-top: rem($padding-top);
-    padding-bottom: rem($margin-bottom);
-    vertical-align: rem($_vertical-align * $font-size);
-    // @if ($debug == 1) { @include debug($font-size); }
   }
 }
 

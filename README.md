@@ -1,24 +1,56 @@
 # baselinegrid.scss
 
-**A modern SCSS toolkit for aligning text and layout to a baseline grid with configuration validation and responsive utilities.**
+**An SCSS toolkit for aligning text and layout to a baseline grid, with compile-time configuration validation and responsive utilities.**
 
-[![Version](https://img.shields.io/badge/version-3.0.1-blue.svg)](https://github.com/jeromev/baselinegrid.scss)
+[![Version](https://img.shields.io/badge/version-3.1.0-blue.svg)](https://github.com/jeromev/baselinegrid.scss)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
-Perfect typography requires vertical rhythm. This toolkit provides precise baseline grid alignment with responsive scaling, configuration validation, fluid spacing, container queries, and utility functions for modern design systems.
+The toolkit snaps line boxes to a vertical grid: it sets each element's
+`line-height` to an integer number of grid units and uses `::before`/`::after`
+pseudo-elements to carry that rhythm to the following content. Grid units are
+emitted as CSS custom properties, so spacing scales responsively across
+breakpoints. An optional, opt-in font-metric correction can additionally nudge
+text onto the baseline using per-font metrics.
+
+This is alignment by line-box stacking, not font-metric trimming — see
+[How alignment works](#how-alignment-works) for what that does and does not give you.
 
 ## Features
 
-- ✅ **Automatic Configuration Validation** - Compile-time checks for scale integrity with enhanced validation
-- 📐 **Responsive Baseline Grid** - 7 breakpoints with customizable scale
-- 🎯 **Precise Typography** - Align text to baseline grid like InDesign
-- 🔧 **Rich Utility Functions** - Grid units, spacing helpers, media queries
-- 🌊 **Fluid Spacing (v3.0)** - Smooth scaling between breakpoints with clamp functions
-- 📦 **Container Queries (v3.0)** - Component-level responsive design
-- 💫 **Enhanced Spacing Mixins (v3.0)** - Convenient patterns for common layouts
-- 🐛 **Debug Mode** - Visual grid overlay for development
-- 📦 **Zero Dependencies** - Pure SCSS with modern module system
-- ⚡ **CSS Custom Properties** - Dynamic grid units that scale responsively
+- **Configuration validation** — compile-time checks that the scale defines the required breakpoints and properties, with warnings for likely mistakes (odd line-heights, breakpoints out of order, decreasing line-heights).
+- **Responsive baseline grid** — 7 default breakpoints; the scale is fully overridable at `@use` time.
+- **Baseline alignment** — `set()` / `scale()` make `line-height` an integer multiple of the grid unit so successive baselines fall on grid lines.
+- **Optional font-metric correction** — opt-in `translateY` nudge derived from per-font metrics (Georgia and Verdana presets included; add your own). Off by default.
+- **Grid-unit utilities** — vertical/horizontal units, padding/margin and spacing mixins, media-query and breakpoint helpers.
+- **Fluid spacing** — `clamp()`-based interpolation between two breakpoints, plus min/max clamps.
+- **Container queries** — thresholds and scales expressed in grid units.
+- **Debug overlay** — a background grid image for visual checking during development.
+- **No runtime dependencies** — the core is self-contained SCSS (the demo uses sanitize.css as a dev dependency).
+- **CSS custom properties** — grid units are emitted as variables that scale responsively.
+
+## How alignment works
+
+`set()` and `scale()` compute a `line-height` that is an integer number of grid
+units (`--base-unit`, half the scale's line-height). Because every line is a
+whole number of units tall, successive baselines land on grid lines. Two
+`::before`/`::after` pseudo-elements — height equal to the line-height, with a
+negative `vertical-align` on `::after` — carry that rhythm to the following
+content.
+
+This snaps the **line box** to the grid. It does not, on its own, control where
+the glyph sits inside that box; that depends on the font's metrics (ascent,
+descent, cap-height). For body text on a 2-unit grid the residual offset is
+sub-pixel. To bring the glyph itself onto the baseline, enable the opt-in
+[font-metric correction](#font-metric-correction).
+
+Constraints:
+
+- `line-height` values should be even integers so that `--base-unit`
+  (`line-height ÷ 2`) is a whole pixel and the grid stays sharp. The validator
+  warns when this is not the case.
+- `root()` sets the root `font-size`/`line-height` in pixels to keep the grid on
+  whole pixels — see the [Accessibility note](#accessibility-note) for the
+  trade-off this implies.
 
 ## Installation
 
@@ -26,10 +58,25 @@ Perfect typography requires vertical rhythm. This toolkit provides precise basel
 npm install baselinegrid.scss
 ```
 
+Then import it in your Sass. The form below works with any toolchain that puts
+`node_modules` on the Sass load path (Vite, `sass-loader`, the `sass` CLI with
+`--load-path=node_modules`):
+
+```scss
+@use 'baselinegrid.scss/baselinegrid' as bg;
+```
+
+If your toolchain has the [package importer](https://sass-lang.com/documentation/at-rules/use/#pkg) enabled
+(`sass --pkg-importer=node`), the canonical modern form also works:
+
+```scss
+@use 'pkg:baselinegrid.scss' as bg;
+```
+
 ## Quick Start
 
 ```scss
-@use 'baselinegrid' as bg with (
+@use 'baselinegrid.scss/baselinegrid' as bg with (
   $debug: 1  // Enable visual grid overlay during development
 );
 
@@ -78,7 +125,7 @@ The toolkit comes with a complete 7-breakpoint scale optimized for modern device
 Override the scale to match your design system:
 
 ```scss
-@use 'baselinegrid' as bg with (
+@use 'baselinegrid.scss/baselinegrid' as bg with (
   $scale: (
     'xs': (
       'font-size': 16px,
@@ -98,6 +145,16 @@ Override the scale to match your design system:
   $debug: 0
 );
 ```
+
+Other configuration options:
+
+| Variable | Default | Effect |
+|----------|---------|--------|
+| `$width-optical-adjustment` | `1.1` | Scales horizontal grid units relative to vertical ones. |
+| `$right-side-optical-adjustment` | `1` | Extra factor applied to right-side padding (`h-right()`, used by `pad()`/`marg()`/`spacing-*`). `1` is symmetric; values `< 1` optically trim the right side. |
+| `$debug` | `0` | `1` shows the grid overlay (also emits a warning so it is not deployed by accident). |
+| `$preset` | `'Georgia'` | Default font preset for the metric correction. |
+| `$metric-correction` | `false` | Enables the opt-in [font-metric correction](#font-metric-correction). |
 
 ### Configuration Validation (Enhanced in v3.0.0)
 
@@ -151,7 +208,7 @@ For simpler projects, configure directly in your main stylesheet:
 
 ```scss
 // main.scss
-@use 'baselinegrid' as bg with (
+@use 'baselinegrid.scss/baselinegrid' as bg with (
   $debug: 1
 );
 
@@ -298,7 +355,7 @@ article {
 }
 
 // Static values (compile-time optimization)
-$icon-size: bg.v-static(2);        // Returns 48px at 'xs' breakpoint
+$icon-size: bg.v-static(2);        // Returns 24px at 'xs' breakpoint
 $column-width: bg.h-static(11);    // Returns static px value
 
 // Zero shortcuts (explicit for clarity)
@@ -337,7 +394,7 @@ padding-left: bg.h0();             // More explicit than 0
 ### Configuration Queries
 
 ```scss
-// Get complete configuration (includes version 3.0.0)
+// Get complete configuration (includes the library version)
 $config: bg.get-config();
 @debug $config;
 
@@ -410,12 +467,48 @@ Use container queries with grid units for component-level responsive design:
 
 **Note:** Container queries require browser support (Chrome 105+, Firefox 110+, Safari 16+).
 
+## Font-metric correction
+
+By default, alignment relies on line-box stacking (see
+[How alignment works](#how-alignment-works)), which positions the line box but
+not the glyph inside it. The opt-in metric correction adds a `translateY` nudge,
+derived from a font's metrics, that shifts the text so the glyph is optically
+balanced on the baseline. It is **off by default** and computed only when used.
+
+```scss
+@use 'baselinegrid.scss/baselinegrid' as bg with (
+  $metric-correction: true,
+  $preset: 'Georgia'   // default preset for set()/scale()
+);
+```
+
+The shift is expressed in `em`, so a single declaration scales across every
+breakpoint. Magnitude is font-dependent — it is the difference between the space
+below the baseline and the space above the caps:
+
+```scss
+bg.baseline-shift('Georgia');  // ≈ -0.0049em (sub-pixel at body sizes)
+bg.baseline-shift('Verdana');  // ≈ -0.068em  (~4px at 60px — visible)
+```
+
+Pass a per-element preset when a component uses a different font:
+
+```scss
+h1 { @include bg.scale('font-size', ('xs': 32px, 'm': 60px), $preset: 'Verdana'); }
+```
+
+Presets ship for `Georgia` and `Verdana`; metrics come from the font's OS/2 and
+`head` tables (the same dataset as [Capsize](https://seek-oss.github.io/capsize/)).
+Add your own by extending `$_presets`. Because the correction is engine- and
+font-dependent, verify it visually for your stack rather than assuming pixel-exact
+results.
+
 ## Debug Mode
 
 Enable visual grid overlay during development:
 
 ```scss
-@use 'baselinegrid' as bg with (
+@use 'baselinegrid.scss/baselinegrid' as bg with (
   $debug: 1
 );
 ```
@@ -433,7 +526,7 @@ Or use the debug mixin on specific elements:
 ## Complete Example
 
 ```scss
-@use 'baselinegrid' as bg with (
+@use 'baselinegrid.scss/baselinegrid' as bg with (
   $debug: 1
 );
 
@@ -567,6 +660,17 @@ Works in all modern browsers that support:
 - CSS Grid (for layout utilities)
 - Container Queries (for container query features - Chrome 105+, Firefox 110+, Safari 16+)
 - SCSS/Sass compilation
+
+## Accessibility note
+
+To keep baselines on an exact pixel grid, `root()` sets the root `font-size`
+and `line-height` in **pixels**. Page (pinch/Ctrl+/-) zoom scales these fine,
+but a user's *default font-size* preference (set in the browser) will **not**
+resize the text, which is a [WCAG 1.4.4](https://www.w3.org/WAI/WCAG21/Understanding/resize-text.html)
+consideration. If honoring the user's default text size matters more than
+pixel-exact snapping for your project, drive the root size from `rem`/`%` and
+treat the grid as best-effort. This is a deliberate trade-off of the px-grid
+approach, not a bug.
 
 ## Credits
 
