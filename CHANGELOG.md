@@ -1,5 +1,17 @@
 # Changelog
 
+## [3.1.1] - 2026-06-26
+
+### Changed
+- Demo (`index.html`): linked the project from the intro and heading, added a
+  "With baselinegrid.scss, it's easy." line, and a closing colophon paragraph.
+- Demo: load sanitize.css from the jsDelivr CDN so the GitHub Pages demo works
+  (the previous `node_modules/...` import 404'd once served from Pages); the demo
+  also sets an explicit page background.
+
+_Docs/demo only — the published library is unchanged from 3.1.0 apart from the
+version string._
+
 ## [3.1.0] - 2026-06-26
 
 ### Added
