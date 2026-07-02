@@ -73,18 +73,16 @@ html {
   background-repeat: repeat;
 }
 
-body {
-  margin: 0;
-}
-
 article {
   transition: padding 0.3s cubic-bezier(0.65, 0.05, 0.36, 1);
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(calc(30 * var(--base-unit) * var(--width-optical-adjustment)), 1fr));
+  column-gap: calc(1 * var(--base-unit) * var(--width-optical-adjustment));
 }
 article > section {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(calc(18 * var(--base-unit) * var(--width-optical-adjustment)), 1fr));
   column-gap: calc(1 * var(--base-unit) * var(--width-optical-adjustment));
-  padding: calc(1 * var(--base-unit)) 0;
 }
 article {
   padding: calc(1 * var(--base-unit)) calc(1 * var(--base-unit) * var(--width-optical-adjustment) * var(--right-side-optical-adjustment)) calc(1 * var(--base-unit)) calc(1 * var(--base-unit) * var(--width-optical-adjustment));
@@ -395,9 +393,9 @@ section p:nth-of-type(3):after {
 }
 
 #gridblock {
+  background-color: red;
   position: fixed;
   top: 0;
-  background-color: red;
   left: calc(1 * var(--base-unit) * var(--width-optical-adjustment));
   width: calc(1 * var(--base-unit) * var(--width-optical-adjustment));
   height: calc(1 * var(--base-unit));
