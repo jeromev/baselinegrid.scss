@@ -6,8 +6,9 @@
 // -----------------------------------------------------------------------------
 // MODULE CONFIGURATION
 // -----------------------------------------------------------------------------
-// @use loads and configures the baselinegrid module. 
-// $debug: 1 activates the visual baseline-grid overlay on the <html> element.
+// @use loads and configures the baselinegrid module.
+// $debug: 1 activates the visual baseline-grid overlay wherever root() is
+// applied — here, the <html> element.
 @use 'baselinegrid' as bg with (
   $debug: 1
 );
@@ -34,6 +35,9 @@
 //     vertical-align: baseline;
 //   }
 //
+// Emitting it first matters: the ::after bookends that set() and scale()
+// output later must override this vertical-align, and they only win the
+// cascade at equal specificity because they come after it in the source.
 @include bg.begin();
 
 
@@ -42,21 +46,21 @@
 // -----------------------------------------------------------------------------
 // root() bootstraps the system. Applied to <html>, it:
 //
-//   1. Emits CSS custom properties at the xs breakpoint (base/mobile-first):
-//        --base-font-size:  15px
-//        --base-line-height: 24px
+//   1. Emits CSS custom properties for the base breakpoint (mobile-first):
+//        --base-font-size and --base-line-height, read from the scale's
+//        'xs' entry.
 //
 //   2. Overrides those properties inside @media (min-width: …) blocks for every
-//      other breakpoint in the scale (s→ul), keeping them in sync at runtime.
+//      other breakpoint in the scale, keeping them in sync at runtime.
 //
 //   3. Derives and emits:
 //        --base-unit: calc(var(--base-line-height) / 2)
-//          → the fundamental vertical grid unit (half a line-height)
-//          → 12px at xs, 13px at s, 14px at m, 15px at l, 16px at xl, 17px at xxl, 18px at ul
-//        --width-optical-adjustment: 1.1
-//          → horizontal units are 10% wider than vertical ones
-//        --right-side-optical-adjustment: 1
-//          → symmetric padding by default; <1 optically trims the right side
+//          → the fundamental vertical grid unit (half a line-height); it
+//            grows automatically as the line-height steps up per breakpoint
+//        --width-optical-adjustment
+//          → horizontal units are widened by this factor for visual balance
+//        --right-side-optical-adjustment
+//          → 1 = symmetric padding; <1 optically trims the right side
 //
 //   4. Sets font-size and line-height to the corresponding CSS variables so
 //      the root element always reflects the current breakpoint.
@@ -78,30 +82,30 @@ article {
 
   display: grid;
 
-  // bg.h(30) — 30 horizontal grid units.
-  // h() returns: calc(30 * var(--base-unit) * var(--width-optical-adjustment))
-  // At xs: calc(30 * 12px * 1.1) ≈ 396px minimum column width.
+  // bg.h(n) — n horizontal grid units:
+  //   calc(n * var(--base-unit) * var(--width-optical-adjustment))
+  // Sizing the minimum column width in grid units keeps the layout on the
+  // grid and lets it scale with the breakpoint automatically.
   grid-template-columns: repeat(auto-fit, minmax(bg.h(30), 1fr));
 
   // bg.h() with no argument = bg.h(1) = 1 horizontal grid unit gap.
   column-gap: bg.h();
 
-  // Nested sections form a sub-grid with narrower minimum columns (18h units).
-  // At xs that is approximately calc(18 * 12px * 1.1) ≈ 238px per column.
+  // Nested sections form a sub-grid with a narrower minimum column width.
   > section {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(bg.h(18), 1fr));
     column-gap: bg.h();
   }
 
-  // pad-scale() applies padding derived from each breakpoint's `pad` key:
-  //   xs → pad(1): padding: v(1)  h-right(1)  v(1)  h(1)
-  //   s  → pad(2): padding: v(2)  h-right(2)  v(2)  h(2)
-  //   m  → pad(3): padding: v(3)  h-right(3)  v(3)  h(3)
-  //   l  → pad(4), xl → pad(5), xxl → pad(8), ul → pad(10)
-  // v(n)       = calc(n * var(--base-unit))            — vertical units
-  // h(n)       = calc(n * var(--base-unit) * var(--width-optical-adjustment))
-  // h-right(n) = h(n) * var(--right-side-optical-adjustment)  (1 here = same)
+  // pad-scale() reads each breakpoint's `pad` key from the scale and applies
+  // pad(n) for it — at global scope for the base breakpoint, then inside one
+  // @media block per larger breakpoint:
+  //   padding: v(n)  h-right(n)  v(n)  h(n)
+  // where:
+  //   v(n)       = calc(n * var(--base-unit))            — vertical units
+  //   h(n)       = calc(n * var(--base-unit) * var(--width-optical-adjustment))
+  //   h-right(n) = h(n) further scaled by var(--right-side-optical-adjustment)
   @include bg.pad-scale();
 }
 
@@ -117,10 +121,10 @@ h1, h2 {
 // -----------------------------------------------------------------------------
 // SHARED TYPOGRAPHIC CONSTRAINTS
 // -----------------------------------------------------------------------------
-// bg.h(40) — 40 horizontal grid units, used as a max-width to keep line
-// lengths within a comfortable reading measure. The value scales with the
-// breakpoint, so the constraint tightens on smaller screens (where a unit is
-// physically smaller) and relaxes on larger screens.
+// A max-width expressed in horizontal grid units keeps line lengths within a
+// comfortable reading measure. The value scales with the breakpoint, so the
+// constraint tightens on smaller screens (where a unit is physically smaller)
+// and relaxes on larger screens.
 h1, h2, p {
   max-width: bg.h(40);
   margin: 0;
@@ -134,32 +138,34 @@ h1, h2, p {
 // scale('font-size', …) is the multi-breakpoint variant of set().
 // When the property is 'font-size' it does more than just set the value:
 //
-//   For each breakpoint entry (e.g. 'm': 60px):
-//     1. Wraps the declarations in @media (min-width: 560px) (for 'm').
-//     2. Sets font-size: 60px.
-//     3. Recalculates --base-unit for that breakpoint's line-height
-//        (28px at 'm' → --base-unit: 14px).
-//     4. Computes the number of grid lines needed:
-//        lines = ceil(60 / 14) = 5
-//     5. Sets --line-height: calc(var(--base-unit) * 5) = 70px at 'm'.
-//     6. Sets line-height: var(--line-height).
+//   For each breakpoint entry above the base, inside that breakpoint's
+//   @media (min-width: …) block:
+//     1. Sets the font-size.
+//     2. Re-emits --base-unit as half that breakpoint's line-height.
+//     3. Computes at compile time how many grid units the line box needs:
+//        lines = ceil(font-size / base-unit)
+//     4. Sets --line-height: calc(var(--base-unit) * lines).
+//     5. Sets line-height: var(--line-height).
+//
+//   The base entry is emitted bare — no media query and no --base-unit
+//   override (root() already provides it) — with the same lines calculation.
 //
 //   After the loop, adds pseudo-element bookends once (they reference
 //   --line-height which already varies per breakpoint):
 //     &:before, &:after { height: var(--line-height); content: ''; }
 //     &:after           { vertical-align: calc(var(--line-height) * -1); }
 //
-// The bookends make every h1 line-box an integer multiple of --base-unit tall,
+// The bookends make every h1 line-box a whole number of grid units tall,
 // so successive headings and paragraphs stay locked to the baseline grid.
 h1 {
   @include bg.scale('font-size', (
-    'xs': 35px,   // ceil(35/12)=3 lines → line-height: 36px
-    's': 38px,    // ceil(38/13)=3 lines → line-height: 39px
-    'm': 60px,    // ceil(60/14)=5 lines → line-height: 70px
-    'l': 65px,    // ceil(65/15)=5 lines → line-height: 75px
-    'xl': 70px,   // ceil(70/16)=5 lines → line-height: 80px
-    'xxl': 73px,  // ceil(73/17)=5 lines → line-height: 85px
-    'ul': 75px    // ceil(75/18)=5 lines → line-height: 90px
+    'xs': 35px,
+    's': 38px,
+    'm': 60px,
+    'l': 65px,
+    'xl': 70px,
+    'xxl': 73px,
+    'ul': 75px
   ));
 }
 
@@ -167,17 +173,19 @@ h1 {
 // -----------------------------------------------------------------------------
 // H2 — RESPONSIVE SCALE (SECONDARY HEADING)
 // -----------------------------------------------------------------------------
-// Same mechanism as h1. Each font-size is snapped to the nearest integer
-// number of grid units for that breakpoint's line-height.
+// Same mechanism as h1. The font-size itself passes through untouched; it is
+// the line-height that gets snapped — rounded UP to the next whole number of
+// grid units, so a size just past a grid line still gets a full extra unit
+// of line-height.
 h2 {
   @include bg.scale('font-size', (
-    'xs': 30px,   // ceil(30/12)=3 lines → line-height: 36px
-    's': 34px,    // ceil(34/13)=3 lines → line-height: 39px
-    'm': 42px,    // ceil(42/14)=3 lines → line-height: 42px
-    'l': 44px,    // ceil(44/15)=3 lines → line-height: 45px
-    'xl': 48px,   // ceil(48/16)=3 lines → line-height: 48px
-    'xxl': 52px,  // ceil(52/17)=4 lines → line-height: 68px
-    'ul': 55px    // ceil(55/18)=4 lines → line-height: 72px
+    'xs': 30px,
+    's': 34px,
+    'm': 42px,
+    'l': 44px,
+    'xl': 48px,
+    'xxl': 52px,
+    'ul': 55px
   ));
 }
 
@@ -185,14 +193,14 @@ h2 {
 // -----------------------------------------------------------------------------
 // P — BASE FONT SIZE (SET WITH NO ARGUMENT)
 // -----------------------------------------------------------------------------
-// set() with no argument aligns the paragraph to the base font size defined
-// by the xs breakpoint ($_base-font-size = 15px).
-//
-// Because the font-size matches the base exactly, set() takes a fast path:
+// set() with no argument defaults to the scale's base font-size, which
+// triggers the fast path: no font-size or line-height is emitted at all, so
+// the paragraph simply inherits the responsive base values from root().
+// The only output is the pair of pseudo-element bookends:
 //   &:before, &:after { height: var(--base-line-height); content: ''; }
 //   &:after           { vertical-align: calc(var(--base-line-height) * -1); }
 //
-// No per-breakpoint overrides are emitted — the pseudo-elements reference
+// No per-breakpoint overrides are needed — the pseudo-elements reference
 // --base-line-height, which root() already updates at each breakpoint.
 p {
   @include bg.set();
@@ -211,35 +219,35 @@ strong em {
 // -----------------------------------------------------------------------------
 // SECTION — PARAGRAPHS AT THREE DIFFERENT FONT SIZES
 // -----------------------------------------------------------------------------
-// Demonstrates set() at three different font sizes.
-// When called with an explicit $font-size (nth-of-type 2 and 3), each call:
+// Demonstrates set() at three different font sizes. The first paragraph gets
+// no call here at all: the global p rule above already covers it via the
+// fast path. Called with an explicit $font-size (the second and third
+// paragraphs), each set():
 //   1. Computes lines = ceil($font-size / $base-unit) at compile time.
 //   2. Emits --line-height: calc(var(--base-unit) * lines).
 //   3. Sets font-size and line-height.
-//   4. Re-emits the overrides inside @media blocks for every non-xs breakpoint
-//      so --base-unit and --line-height stay accurate as the scale changes.
+//   4. Re-emits the overrides inside @media blocks for every non-base
+//      breakpoint so --base-unit and --line-height stay accurate as the
+//      scale changes.
 //   5. Attaches ::before/::after bookends using --line-height.
-// When called with no argument (nth-of-type 1), the fast path applies instead
-// — see the p { @include bg.set() } block above for a full description.
+// These bookends outrank the global p bookends on specificity, which is why
+// the two rulesets can coexist on the same paragraphs.
 section {
   p {
 
-    // nth-of-type(2): 23px text — slightly larger than the base.
-    // At xs: ceil(23/12) = 2 lines → line-height = calc(var(--base-unit) * 2).
-    // At l:  ceil(23/15) = 2 lines → line-height = calc(var(--base-unit) * 2).
-    // At ul: ceil(23/18) = 2 lines → line-height = calc(var(--base-unit) * 2).
-    // The font-size stays fixed at 23px across all breakpoints; only
-    // --base-unit changes, keeping the line-box on the grid.
+    // nth-of-type(2): larger than the base size. The font-size stays fixed
+    // across all breakpoints; only --base-unit changes, and the per-breakpoint
+    // ceil() recalculation keeps the line box on the grid.
     &:nth-of-type(2) {
       @include bg.set(23px);
     }
 
-    // nth-of-type(3): 11px text — intentionally small (caption-scale).
-    // At xs: ceil(11/12) = 1 line → line-height = calc(var(--base-unit) * 1).
+    // nth-of-type(3): intentionally small (caption-scale) — the same
+    // mechanism also works below the base size.
     // padding-top: bg.v() adds exactly 1 vertical grid unit of space above
-    // this paragraph, separating it from the preceding element by one full
-    // grid line without breaking the rhythm below it.
-    // bg.v() = calc(1 * var(--base-unit)) — responsive at no extra cost.
+    // this paragraph, separating it from the preceding element without
+    // breaking the rhythm below it.
+    // bg.v(n) = calc(n * var(--base-unit)) — responsive at no extra cost.
     &:nth-of-type(3) {
       padding-top: bg.v();
       @include bg.set(11px);

@@ -1,5 +1,25 @@
 # Changelog
 
+## [3.1.3] - 2026-07-02
+
+### Changed
+- Demo (`styles.scss`): reworked the inline comments to describe mechanisms
+  instead of configured values — removed the per-breakpoint pixel arithmetic
+  (`ceil()` examples, the `--base-unit` px series, breakpoint widths, pad
+  keys) so the comments stay accurate when the scale is reconfigured.
+
+### Fixed
+- Demo comment corrections: the line-height is rounded **up** to the next
+  whole number of grid units, not "snapped to the nearest integer"; a
+  no-argument `set()` emits no font-size at all (the paragraph inherits the
+  responsive base from `root()`); `scale()` emits the base entry bare (no
+  media query, no `--base-unit` override); documented why `begin()` must
+  precede `set()`/`scale()` in the source (equal-specificity cascade order).
+- Lockfile version drift (was still 3.1.1).
+
+_Docs/demo only — the published library is unchanged from 3.1.2 apart from the
+version string._
+
 ## [3.1.2] - 2026-07-01
 
 ### Changed
