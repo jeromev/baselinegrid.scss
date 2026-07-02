@@ -20,8 +20,6 @@ body *:after {
 
 html {
   font-family: Georgia, serif;
-  background: #fff;
-  color: #111;
   --base-font-size: 15px;
   --base-line-height: 24px;
 }
@@ -263,13 +261,6 @@ strong em {
   font-style: normal;
 }
 
-section p:nth-of-type(1):before, section p:nth-of-type(1):after {
-  height: var(--base-line-height);
-  content: "";
-}
-section p:nth-of-type(1):after {
-  vertical-align: calc(var(--base-line-height) * -1);
-}
 section p:nth-of-type(2) {
   font-size: 23px;
   --line-height: calc(var(--base-unit) * 2);

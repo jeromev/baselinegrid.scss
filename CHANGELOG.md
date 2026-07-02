@@ -1,5 +1,15 @@
 # Changelog
 
+## [3.1.2] - 2026-07-01
+
+### Changed
+- Demo (`styles.scss`): added extensive inline comments documenting every mixin
+  and function call — `begin()`, `root()`, `set()`, `scale()`, `pad-scale()`,
+  `h()`, `v()` — including compiled output examples and per-breakpoint
+  `ceil()` calculations for `h1` and `h2`.
+
+_Docs/demo only — the published library is unchanged from 3.1.1._
+
 ## [3.1.1] - 2026-06-26
 
 ### Changed
