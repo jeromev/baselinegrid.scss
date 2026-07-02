@@ -5,6 +5,7 @@
 @import url(https://cdn.jsdelivr.net/npm/sanitize.css@13.0.0/sanitize.css);
 
 @include bg.begin();
+
 html {
   font-family: Georgia, serif;
   background: #fff;
@@ -12,17 +13,15 @@ html {
   @include bg.root();
 }
 
-body {
-  margin: 0;
-}
-
 article {
   transition: padding .3s cubic-bezier(.65,.05,.36,1);
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(bg.h(30), 1fr));
+  column-gap: bg.h();
   > section {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(bg.h(18), 1fr));
     column-gap: bg.h();
-    padding: bg.v() 0;
   }
   @include bg.pad-scale();
 }
@@ -85,9 +84,9 @@ section {
 }
 
 #gridblock {
+  background-color: red;
   position: fixed;
   top: 0;
-  background-color: red;
   left: bg.h();
   width: bg.h();
   height: bg.v();
