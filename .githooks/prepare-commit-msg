@@ -1,0 +1,30 @@
+#!/bin/sh
+# prepare-commit-msg — strip any AI co-authorship trailer.
+#
+# This repository records AI assistance as method/provenance, never as
+# authorship (see AUTHORSHIP.md). A `Co-Authored-By: Claude`/Anthropic line
+# asserts an authorship the project does not grant, so it is removed here at
+# the git level — an external refuser, not a matter of tooling goodwill.
+#
+# Forward disclosure uses an instrumental `Generated-with:` trailer, added by
+# the commit author — NOT by this hook. A hook cannot know which commits were
+# AI-assisted and must not falsely stamp a human-only commit.
+#
+# Real human co-authors (`Co-authored-by: Some Person <...>`) are preserved.
+
+msg_file="$1"
+[ -f "$msg_file" ] || exit 0
+
+tmp="$msg_file.aicoauthor.$$"
+grep -viE '^[[:space:]]*Co-authored-by:.*(claude|anthropic)' "$msg_file" > "$tmp"
+status=$?
+
+# grep exit 0 (kept some lines) or 1 (all lines were AI trailers) are both
+# normal; only 2 signals a real error, in which case leave the message alone.
+if [ "$status" -le 1 ]; then
+  mv "$tmp" "$msg_file"
+else
+  rm -f "$tmp"
+fi
+
+exit 0
