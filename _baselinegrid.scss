@@ -243,6 +243,16 @@ $_presets: (
     'Ascent': 2059,
     'Descent': 430,
     'LineGap': 0
+  ),
+  // Fira Sans and Fira Mono share one set of vertical metrics, so this preset
+  // serves both — a sans/mono pair that sits on the baseline identically.
+  'Fira Sans': (
+    'EmSize': 1000,
+    'CapHeight': 689,
+    'XHeight': 527,
+    'Ascent': 935,
+    'Descent': 265,
+    'LineGap': 0
   )
 );
 

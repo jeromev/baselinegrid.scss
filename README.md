@@ -20,7 +20,7 @@ This is alignment by line-box stacking, not font-metric trimming — see
 - **Configuration validation** — compile-time checks that the scale defines the required breakpoints and properties, with warnings for likely mistakes (odd line-heights, breakpoints out of order, decreasing line-heights).
 - **Responsive baseline grid** — 7 default breakpoints; the scale is fully overridable at `@use` time.
 - **Baseline alignment** — `set()` / `scale()` make `line-height` an integer multiple of the grid unit so successive baselines fall on grid lines.
-- **Optional font-metric correction** — opt-in `translateY` nudge derived from per-font metrics (Georgia and Verdana presets included; add your own). Off by default.
+- **Optional font-metric correction** — opt-in `translateY` nudge derived from per-font metrics (Georgia, Verdana and Fira Sans presets included; add your own). Off by default.
 - **Grid-unit utilities** — vertical/horizontal units, padding/margin and spacing mixins, media-query and breakpoint helpers.
 - **Fluid spacing** — `clamp()`-based interpolation between two breakpoints, plus min/max clamps.
 - **Container queries** — thresholds and scales expressed in grid units.
@@ -487,8 +487,9 @@ breakpoint. Magnitude is font-dependent — it is the difference between the spa
 below the baseline and the space above the caps:
 
 ```scss
-bg.baseline-shift('Georgia');  // ≈ -0.0049em (sub-pixel at body sizes)
-bg.baseline-shift('Verdana');  // ≈ -0.068em  (~4px at 60px — visible)
+bg.baseline-shift('Georgia');    // ≈ -0.0049em (sub-pixel at body sizes)
+bg.baseline-shift('Verdana');    // ≈ -0.068em  (~4px at 60px — visible)
+bg.baseline-shift('Fira Sans');  // ≈ +0.019em  (positive — nudges down, not up)
 ```
 
 Pass a per-element preset when a component uses a different font:
@@ -497,8 +498,10 @@ Pass a per-element preset when a component uses a different font:
 h1 { @include bg.scale('font-size', ('xs': 32px, 'm': 60px), $preset: 'Verdana'); }
 ```
 
-Presets ship for `Georgia` and `Verdana`; metrics come from the font's OS/2 and
-`head` tables (the same dataset as [Capsize](https://seek-oss.github.io/capsize/)).
+Presets ship for `Georgia`, `Verdana` and `Fira Sans`; metrics come from the font's
+OS/2 and `head` tables (the same dataset as [Capsize](https://seek-oss.github.io/capsize/)).
+The `Fira Sans` preset also serves Fira Mono, which carries identical vertical
+metrics — so a sans/mono pair from that family sits on the baseline as one.
 Add your own by extending `$_presets`. Because the correction is engine- and
 font-dependent, verify it visually for your stack rather than assuming pixel-exact
 results.

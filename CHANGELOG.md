@@ -1,5 +1,13 @@
 # Changelog
 
+## [3.2.0] - 2026-08-04
+
+### Added
+- Font metrics preset `'Fira Sans'` — EmSize 1000, CapHeight 689, XHeight 527,
+  Ascent 935, Descent 265, LineGap 0 — read from the font's `OS/2` and `head`
+  tables. Fira Mono carries identical vertical metrics, so this one preset
+  serves the whole superfamily: `baseline-shift('Fira Sans')` is `+0.019em`.
+
 ## [3.1.3] - 2026-07-02
 
 ### Changed
